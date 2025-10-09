@@ -29,4 +29,6 @@ public class DistritoMapper {
     }
 
 
+    public void updateEntityFromDTO(DistritoRequestDTO distritoRequestDTO, Distrito distrito) {
+    }
 }

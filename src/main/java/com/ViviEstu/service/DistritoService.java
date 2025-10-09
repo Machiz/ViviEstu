@@ -81,12 +81,6 @@ public class DistritoService {
         return distritoMapper.convertListToDTO(distritoRepository.findByTipo(tipo));
     }
 
-    /**
-     * Obtiene un distrito por su ID.
-     * @param id ID del distrito a buscar.
-     * @return El distrito encontrado como DTO.
-     * @throws ResourceNotFoundException si no se encuentra el distrito.
-     */
     @Transactional(readOnly = true)
     public DistritoResponseDTO getDistritoById(Long id) {
         Distrito distrito = distritoRepository.findById(id)
@@ -94,13 +88,7 @@ public class DistritoService {
         return distritoMapper.convertToDTO(distrito);
     }
 
-    /**
-     * Actualiza un distrito existente por su ID.
-     * @param id ID del distrito a actualizar.
-     * @param distritoRequestDTO Datos nuevos del distrito.
-     * @return El distrito actualizado como DTO.
-     * @throws ResourceNotFoundException si no se encuentra el distrito.
-     */
+
     @Transactional
     public DistritoResponseDTO updateDistrito(Long id, DistritoRequestDTO distritoRequestDTO) {
         Distrito distrito = distritoRepository.findById(id)
@@ -110,11 +98,6 @@ public class DistritoService {
         return distritoMapper.convertToDTO(distrito);
     }
 
-    /**
-     * Elimina un distrito por su ID.
-     * @param id ID del distrito a eliminar.
-     * @throws ResourceNotFoundException si no se encuentra el distrito.
-     */
     @Transactional
     public void deleteDistrito(Long id) {
         Distrito distrito = distritoRepository.findById(id)

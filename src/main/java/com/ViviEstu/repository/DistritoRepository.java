@@ -1,6 +1,6 @@
 package com.ViviEstu.repository;
 
-import com.upc.viviestu.model.entity.Distrito;
+import com.ViviEstu.model.entity.Distrito;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

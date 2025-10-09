@@ -1,9 +1,9 @@
 package com.ViviEstu.mapper;
 
-import com.upc.viviestu.model.dto.DistritoRequestDTO;
+import com.ViviEstu.model.dto.request.DistritoRequestDTO;
 import org.modelmapper.ModelMapper;
-import com.upc.viviestu.model.dto.DistritoResponseDTO;
-import com.upc.viviestu.model.entity.Distrito;
+import com.ViviEstu.model.dto.response.DistritoResponseDTO;
+import com.ViviEstu.model.entity.Distrito;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import java.util.List;

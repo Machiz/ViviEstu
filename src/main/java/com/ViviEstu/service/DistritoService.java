@@ -1,10 +1,10 @@
 package com.ViviEstu.service;
 
-import com.upc.viviestu.mapper.DistritoMapper;
-import com.upc.viviestu.repository.DistritoRepository;
-import com.upc.viviestu.model.dto.DistritoRequestDTO;
-import com.upc.viviestu.model.dto.DistritoResponseDTO;
-import com.upc.viviestu.model.entity.Distrito;
+import com.ViviEstu.mapper.DistritoMapper;
+import com.ViviEstu.repository.DistritoRepository;
+import com.ViviEstu.model.dto.request.DistritoRequestDTO;
+import com.ViviEstu.model.dto.response.DistritoResponseDTO;
+import com.ViviEstu.model.entity.Distrito;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,4 +80,46 @@ public class DistritoService {
         }
         return distritoMapper.convertListToDTO(distritoRepository.findByTipo(tipo));
     }
+
+    /**
+     * Obtiene un distrito por su ID.
+     * @param id ID del distrito a buscar.
+     * @return El distrito encontrado como DTO.
+     * @throws ResourceNotFoundException si no se encuentra el distrito.
+     */
+    @Transactional(readOnly = true)
+    public DistritoResponseDTO getDistritoById(Long id) {
+        Distrito distrito = distritoRepository.findById(id)
+                .orElseThrow(() -> new com.ViviEstu.exception.ResourceNotFoundException("Distrito no encontrado con id: " + id));
+        return distritoMapper.convertToDTO(distrito);
+    }
+
+    /**
+     * Actualiza un distrito existente por su ID.
+     * @param id ID del distrito a actualizar.
+     * @param distritoRequestDTO Datos nuevos del distrito.
+     * @return El distrito actualizado como DTO.
+     * @throws ResourceNotFoundException si no se encuentra el distrito.
+     */
+    @Transactional
+    public DistritoResponseDTO updateDistrito(Long id, DistritoRequestDTO distritoRequestDTO) {
+        Distrito distrito = distritoRepository.findById(id)
+                .orElseThrow(() -> new com.ViviEstu.exception.ResourceNotFoundException("Distrito no encontrado con id: " + id));
+        distritoMapper.updateEntityFromDTO(distritoRequestDTO, distrito);
+        distritoRepository.save(distrito);
+        return distritoMapper.convertToDTO(distrito);
+    }
+
+    /**
+     * Elimina un distrito por su ID.
+     * @param id ID del distrito a eliminar.
+     * @throws ResourceNotFoundException si no se encuentra el distrito.
+     */
+    @Transactional
+    public void deleteDistrito(Long id) {
+        Distrito distrito = distritoRepository.findById(id)
+                .orElseThrow(() -> new com.ViviEstu.exception.ResourceNotFoundException("Distrito no encontrado con id: " + id));
+        distritoRepository.delete(distrito);
+    }
+
 }

@@ -20,5 +20,11 @@ public interface FavoritosRepository extends JpaRepository<Favoritos, Long> {
      * @return true si ya existe, false en caso contrario.
      */
     boolean existsByEstudianteIdAndAlojamientoId(Long estudianteId, Long alojamientoId);
-}
 
+    /**
+     * Elimina un favorito basado en el ID del estudiante y el ID del alojamiento.
+     * @param estudianteId el ID del estudiante.
+     * @param alojamientoId el ID del alojamiento.
+     */
+    void deleteByEstudianteIdAndAlojamientoId(Long estudianteId, Long alojamientoId);
+}

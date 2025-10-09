@@ -100,4 +100,17 @@ public class FavoritosService {
         }
         favoritosRepository.deleteById(favoritoId);
     }
+
+    /**
+     * Elimina un favorito de la lista de un estudiante usando el ID del estudiante y el ID del alojamiento.
+     * @param estudianteId el ID del estudiante.
+     * @param alojamientoId el ID del alojamiento.
+     */
+    @Transactional
+    public void removeFavorito(Long estudianteId, Long alojamientoId) {
+        if (!favoritosRepository.existsByEstudianteIdAndAlojamientoId(estudianteId, alojamientoId)) {
+            throw new ResourceNotFoundException("Favorito no encontrado para el estudiante " + estudianteId + " y alojamiento " + alojamientoId);
+        }
+        favoritosRepository.deleteByEstudianteIdAndAlojamientoId(estudianteId, alojamientoId);
+    }
 }

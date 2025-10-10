@@ -1,6 +1,6 @@
 package com.ViviEstu.service;
 
-import com.ViviEstu.model.dto.CoordenadasDTO;
+import com.ViviEstu.model.dto.response.CoordenadasDTO;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;

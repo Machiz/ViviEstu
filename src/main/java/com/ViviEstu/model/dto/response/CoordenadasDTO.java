@@ -1,4 +1,4 @@
-package com.ViviEstu.model.dto;
+package com.ViviEstu.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

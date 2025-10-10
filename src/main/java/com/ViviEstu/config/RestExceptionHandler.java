@@ -43,7 +43,7 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ProblemDetail handleResourceNotFoundException(BadRequestException ex){
+    public ProblemDetail handleResourceNotFoundException(ResourceNotFoundException ex){
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
                 ex.getMessage());
     }

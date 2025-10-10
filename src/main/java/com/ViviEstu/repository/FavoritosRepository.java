@@ -4,6 +4,8 @@ import com.ViviEstu.model.entity.Favoritos;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface FavoritosRepository extends JpaRepository<Favoritos, Long> {
     /**
@@ -12,6 +14,8 @@ public interface FavoritosRepository extends JpaRepository<Favoritos, Long> {
      * @return el número de favoritos del estudiante.
      */
     long countByEstudianteId(Long estudianteId);
+
+    List<Favoritos> findByEstudianteId(Long estudianteId);
 
     /**
      * Verifica si ya existe un favorito para una combinación de estudiante y alojamiento.

@@ -18,7 +18,6 @@ public class DistritoService {
     private final DistritoRepository distritoRepository;
     private final DistritoMapper distritoMapper;
 
-
     /**
      * Crea un nuevo distrito en la base de datos.
      * @param distritoRequestDTO Datos del distrito a crear.

@@ -4,13 +4,15 @@ import com.ViviEstu.model.dto.request.DistritoRequestDTO;
 import com.ViviEstu.model.dto.response.DistritoResponseDTO;
 import com.ViviEstu.service.DistritoService;
 import com.ViviEstu.exception.ResourceNotFoundException;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/distritos")
+@RequestMapping("/distritos")
+@AllArgsConstructor
 public class DistritoController {
     private DistritoService distritoService;
 

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -18,7 +18,7 @@ public class Interacciones {
     private Integer id;
 
     @Column(nullable = false)
-    private Timestamp fecha;
+    private LocalDateTime fecha;
 
     @ManyToOne
     @JoinColumn(name = "estudiantes_id", nullable = false)

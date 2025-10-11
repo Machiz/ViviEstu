@@ -44,7 +44,7 @@ public class AlojamientoService {
         Propietarios propietario = propietariosRepository.findById(dto.getPropietarioId())
                 .orElseThrow(() -> new ResourceNotFoundException("Propietario no encontrado"));
 
-        Distrito zona = distritoRepository.findById(dto.getZonaId())
+        Distrito zona = distritoRepository.findById(dto.getDistritoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Zona no encontrada"));
 
         Alojamiento alojamiento = mapper.convertToEntity(dto);

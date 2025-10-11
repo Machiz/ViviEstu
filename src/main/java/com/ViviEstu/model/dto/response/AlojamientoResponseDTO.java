@@ -18,6 +18,6 @@ public class AlojamientoResponseDTO {
     private BigDecimal precioMensual;
     private Boolean alquilado;
     private String propietario;
-    private String zona;
+    private String distrito;
     private Timestamp fecha;
 }

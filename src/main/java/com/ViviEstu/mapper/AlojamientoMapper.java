@@ -22,7 +22,7 @@ public class AlojamientoMapper {
     public AlojamientoResponseDTO convertToDTO(Alojamiento alojamiento) {
         AlojamientoResponseDTO dto = mapper.map(alojamiento, AlojamientoResponseDTO.class);
         dto.setPropietario(alojamiento.getPropietario().getNombre());
-        dto.setZona(alojamiento.getDistrito().getNombre());
+        dto.setDistrito(alojamiento.getDistrito().getNombre());
         return dto;
     }
 

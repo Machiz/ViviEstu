@@ -14,12 +14,12 @@ public class Transporte {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(name = "nombre", length = 50, nullable = false)
+    @Column(nullable = false, length = 50)
     private String nombre;
 
-    @ManyToOne
-    @JoinColumn(name = "alojamientos_id", nullable = false)
-    private Alojamiento alojamiento;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "zonas_id", nullable = false)
+    private Distrito distrito;
 }

@@ -13,8 +13,7 @@ RUN ./mvnw clean package -DskipTests
 FROM eclipse-temurin:21-jdk
 # Definir directorio de trabajo
 WORKDIR /app
-# Copiar el JAR generado desde la etapa de build
-COPY --from=build /app/target/*.jar app.jar
+
 # Exponer el puerto de la aplicación
 EXPOSE 8080
 # Comando de inicio

@@ -6,6 +6,7 @@ import com.ViviEstu.model.dto.request.AlojamientoRequestDTO;
 import com.ViviEstu.model.dto.response.AlojamientoResponseDTO;
 import com.ViviEstu.model.entity.Alojamiento;
 import com.ViviEstu.model.entity.Distrito;
+import com.ViviEstu.model.entity.Estudiantes;
 import com.ViviEstu.model.entity.Propietarios;
 import com.ViviEstu.repository.AlojamientoRepository;
 import com.ViviEstu.repository.DistritoRepository;
@@ -13,6 +14,7 @@ import com.ViviEstu.repository.PropietariosRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.ViviEstu.model.dto.response.CoordenadasDTO;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -25,6 +27,7 @@ public class AlojamientoService {
     private final DistritoRepository distritoRepository;
     private final PropietariosRepository propietariosRepository;
     private final AlojamientoMapper mapper;
+    private final GeocodingService geocodingService;
 
     @Transactional(readOnly = true)
     public List<AlojamientoResponseDTO> getAllAlojamientos() {
@@ -47,7 +50,15 @@ public class AlojamientoService {
         Distrito zona = distritoRepository.findById(dto.getDistritoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Zona no encontrada"));
 
-        Alojamiento alojamiento = mapper.convertToEntity(dto);
+        Alojamiento alojamiento = new Alojamiento();
+        alojamiento.setTitulo(dto.getTitulo());
+        alojamiento.setDescripcion(dto.getDescripcion());
+        alojamiento.setDireccion(dto.getDireccion());
+        alojamiento.setPrecioMensual(dto.getPrecioMensual());
+        CoordenadasDTO coords = geocodingService.getCoordinates(dto.getDireccion());
+        alojamiento.setLatitud(coords.getLatitude());
+        alojamiento.setLongitud(coords.getLongitude());
+        alojamiento.setAlquilado(dto.getAlquilado());
         alojamiento.setPropietario(propietario);
         alojamiento.setDistrito(zona);
         alojamiento.setFecha(new Timestamp(System.currentTimeMillis()));

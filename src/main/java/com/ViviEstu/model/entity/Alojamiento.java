@@ -39,11 +39,11 @@ public class Alojamiento {
     @Column(nullable = false)
     private Boolean alquilado;
 
-    @Column(precision = 10, scale = 8)
-    private BigDecimal latitud;
+    @Column()
+    private double latitud;
 
-    @Column(precision = 11, scale = 8)
-    private BigDecimal longitud;
+    @Column()
+    private double longitud;
 
     @ManyToOne()
     @JoinColumn(name = "distritos_id", nullable = false)

@@ -32,3 +32,4 @@ public class Propietarios {
     @Column(name = "dni", length = 8, nullable = false)
     private String dni;
 }
+

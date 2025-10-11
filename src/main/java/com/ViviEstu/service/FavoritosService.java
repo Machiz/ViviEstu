@@ -12,7 +12,6 @@ import com.ViviEstu.mapper.FavoritosMapper;
 import com.ViviEstu.exception.BadRequestException;
 import com.ViviEstu.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +40,7 @@ public class FavoritosService {
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con id: " + requestDTO.getEstudianteId()));
 
         // Asumiendo que la entidad Estudiantes tiene un campo booleano 'verificado'
-        if (!estudiante.getVerificado()) {
+        if (!estudiante.isVerificado()) {
             throw new BadRequestException("Solo los estudiantes verificados pueden agregar favoritos.");
         }
 
@@ -70,7 +69,7 @@ public class FavoritosService {
         favorito.setAlojamiento(alojamiento);
 
         Favoritos savedFavorito = favoritosRepository.save(favorito);
-        return favoritosMapper.toResponseDTO(savedFavorito);
+        return favoritosMapper.convertToDTO(savedFavorito);
     }
 
     /**
@@ -85,7 +84,7 @@ public class FavoritosService {
         }
         List<Favoritos> favoritos = favoritosRepository.findByEstudianteId(estudianteId);
         return favoritos.stream()
-                .map(favoritosMapper::toResponseDTO)
+                .map(favoritosMapper::convertToDTO)
                 .collect(Collectors.toList());
     }
 

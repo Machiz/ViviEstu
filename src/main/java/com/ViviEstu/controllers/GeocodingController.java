@@ -1,6 +1,6 @@
 package com.ViviEstu.controllers;
 
-import com.ViviEstu.model.dto.CoordenadasDTO;
+import com.ViviEstu.model.dto.response.CoordenadasDTO;
 import com.ViviEstu.service.GeocodingService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

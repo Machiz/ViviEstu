@@ -1,5 +1,8 @@
 package com.ViviEstu.repository;
 
-public interface TransporteRepository {
+import com.ViviEstu.model.entity.Transporte;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TransporteRepository extends JpaRepository<Transporte,Long> {
 
 }

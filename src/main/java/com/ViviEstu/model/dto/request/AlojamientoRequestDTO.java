@@ -31,5 +31,5 @@ public class AlojamientoRequestDTO {
     private Long propietarioId;
 
     @NotNull(message = "El ID de la zona es obligatorio")
-    private Long zonaId;
+    private Long distritoId;
 }

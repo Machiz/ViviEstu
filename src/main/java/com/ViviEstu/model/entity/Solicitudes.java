@@ -27,6 +27,8 @@ public class Solicitudes {
     @Column(name = "oferta", nullable = false)
     private Double oferta;
 
+    @Column(nullable = false, length = 20)
+    private String estado;
 
     @ManyToOne
     @JoinColumn(name = "estudiantes_id", nullable = false)

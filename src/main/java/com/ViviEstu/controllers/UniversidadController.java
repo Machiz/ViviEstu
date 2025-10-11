@@ -5,19 +5,18 @@ import com.ViviEstu.model.dto.request.UniversidadRequestDTO;
 import com.ViviEstu.model.dto.response.UniversidadResponseDTO;
 import com.ViviEstu.service.UniversidadService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/universidades")
+@RequestMapping("/universidades")
+@AllArgsConstructor
 public class UniversidadController {
     private final UniversidadService universidadService;
 
-    public UniversidadController(UniversidadService universidadService) {
-        this.universidadService = universidadService;
-    }
 
     @PostMapping
     public ResponseEntity<UniversidadResponseDTO> crear(@Valid @RequestBody UniversidadRequestDTO request) {

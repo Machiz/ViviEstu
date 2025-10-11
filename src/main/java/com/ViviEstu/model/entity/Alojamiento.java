@@ -19,7 +19,7 @@ public class Alojamiento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false, length = 50)
     private String titulo;
@@ -39,24 +39,23 @@ public class Alojamiento {
     @Column(nullable = false)
     private Boolean alquilado;
 
-    // 🔹 Nuevas columnas
     @Column(precision = 10, scale = 8)
     private BigDecimal latitud;
 
     @Column(precision = 11, scale = 8)
     private BigDecimal longitud;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "distritos_id", nullable = false)
     private Distrito distrito;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "propietarios_id", nullable = false)
     private Propietarios propietario;
 
-    @OneToMany(mappedBy = "alojamiento", cascade = CascadeType.ALL)
+    @OneToMany()
     private List<ImagenesAlojamiento> imagenes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "alojamiento", cascade = CascadeType.ALL)
+    @OneToMany()
     private List<Transporte> transportes = new ArrayList<>();
 }

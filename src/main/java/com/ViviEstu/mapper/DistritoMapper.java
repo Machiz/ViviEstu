@@ -28,7 +28,7 @@ public class DistritoMapper {
                 .toList();
     }
 
-
     public void updateEntityFromDTO(DistritoRequestDTO distritoRequestDTO, Distrito distrito) {
+        modelMapper.map(distritoRequestDTO, distrito);
     }
 }

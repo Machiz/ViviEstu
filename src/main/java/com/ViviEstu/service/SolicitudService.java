@@ -58,9 +58,14 @@ public class SolicitudService {
                 .orElseThrow(() -> new RuntimeException("Alojamiento no encontrado con ID: " + request.getAlojamientoId()));
 
         Solicitudes solicitud = mapper.toEntity(request, estudiante, alojamiento);
+
+        // 👇 Valor por defecto
+        solicitud.setEstado("PENDIENTE");
+
         Solicitudes guardada = solicitudesRepository.save(solicitud);
         return mapper.toDTO(guardada);
     }
+
 
     // ✏️ Actualizar solicitud existente
     public SolicitudResponseDTO actualizar(Long id, SolicitudRequestDTO request) {

@@ -13,7 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class AlojamientoMapper {
 
-    private final ModelMapper mapper = new ModelMapper();
+
+    private final ModelMapper mapper;
 
     public Alojamiento convertToEntity(AlojamientoRequestDTO dto) {
         return mapper.map(dto, Alojamiento.class);

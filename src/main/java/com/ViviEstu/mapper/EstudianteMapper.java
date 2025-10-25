@@ -18,9 +18,6 @@ public class EstudianteMapper {
 
     private final ModelMapper modelMapper;
 
-    public Estudiantes convertToEntity(EstudiantesRequestDTO estudiantesRequestDTO) {
-        return modelMapper.map(estudiantesRequestDTO, Estudiantes.class);
-    }
 
     public EstudianteResponseDTO convertToDTO(Estudiantes estudiante) {
         return modelMapper.map(estudiante, EstudianteResponseDTO.class);

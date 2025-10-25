@@ -11,8 +11,12 @@ import lombok.NoArgsConstructor;
 public class EstudiantesRequestDTO {
 
     @NotBlank(message = "El nombre no puede estar vacío")
-    @Size(max = 50, message = "El nombre no debe exceder los 50 caracteres")
+    @Size(max = 20, message = "El nombre no debe exceder los 20 caracteres")
     private String nombre;
+
+    @NotBlank(message = "Los apellidos no pueden estar vacío")
+    @Size(max = 50, message = "Los apellidos no debe exceder los 50 caracteres")
+    private String apellidos;
 
     @NotBlank(message = "El correo no puede estar vacío")
     @Email(message = "El correo debe tener un formato válido")
@@ -26,18 +30,14 @@ public class EstudiantesRequestDTO {
     @Pattern(regexp = "[0-9]+", message = "El teléfono debe contener solo dígitos")
     private String telefono;
 
-    @NotBlank(message = "La universidad no puede estar vacía")
-    private String universidad;
-
     @NotBlank(message = "La carrera no puede estar vacía")
     private String carrera;
 
-    private String distritoPreferencia; // opcional, si no viene usar "No definido"
-
-    private String urlPerfil;           // opcional
+    @NotNull(message = "Debe seleccionar un ciclo")
+    private Integer ciclo;
 
     @NotNull(message = "El DNI es obligatorio")
-    private Integer dni;
+    private String dni;
 
     @NotNull(message = "Debe seleccionar un distrito")
     private Long distritoId;

@@ -39,10 +39,6 @@ public class FavoritosService {
         Estudiantes estudiante = estudiantesRepository.findById(requestDTO.getEstudianteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con id: " + requestDTO.getEstudianteId()));
 
-        // Asumiendo que la entidad Estudiantes tiene un campo booleano 'verificado'
-        if (!estudiante.isVerificado()) {
-            throw new BadRequestException("Solo los estudiantes verificados pueden agregar favoritos.");
-        }
 
         // Validar que el alojamiento existe y está disponible
         Alojamiento alojamiento = alojamientoRepository.findById(requestDTO.getAlojamientoId())

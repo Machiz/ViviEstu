@@ -20,9 +20,6 @@ public class PropietariosRequestDTO {
     @NotBlank(message = "El teléfono es obligatorio")
     private String telefono;
 
-    @NotBlank(message = "La URL del perfil es obligatoria")
-    private String urlPerfil;
-
     private Integer dni;
 
 }

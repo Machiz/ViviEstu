@@ -19,6 +19,9 @@ public class Estudiantes {
     @Column(name = "nombre", nullable = false, length = 50)
     private String nombre;
 
+    @Column(name = "apellidos", nullable = false, length = 50)
+    private String apellidos;
+
     @Column(name = "correo", nullable = false, unique = true, length = 50)
     private String correo;
 
@@ -28,20 +31,14 @@ public class Estudiantes {
     @Column(nullable = false, length = 15)
     private String telefono;
 
-    @Column(nullable = false)
-    private boolean verificado = false; // Valor por defecto
-
-    @Column(name = "distrito_preferencia", nullable = false, length = 50)
-    private String distritoPreferencia = "No definido"; // Valor por defecto
-
     @Column(nullable = false, length = 50)
     private String carrera;
 
-    @Column(name = "url_perfil", length = 100)
-    private String urlPerfil;
+    @Column(nullable = false, length = 50)
+    private Integer ciclo;
 
     @Column(name = "DNI", nullable = false)
-    private Integer dni;
+    private String dni;
 
     // Relaciones con otras tablas
     @ManyToOne

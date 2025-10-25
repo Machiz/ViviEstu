@@ -3,6 +3,7 @@ package com.ViviEstu.controllers;
 
 import com.ViviEstu.mapper.PropietariosMapper;
 import com.ViviEstu.model.dto.request.PropietariosRequestDTO;
+import com.ViviEstu.model.dto.response.EstudianteResponseDTO;
 import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
 import com.ViviEstu.model.entity.Alojamiento;
 import com.ViviEstu.model.entity.ImagenesAlojamiento;
@@ -10,6 +11,7 @@ import com.ViviEstu.model.entity.Propietarios;
 import com.ViviEstu.service.PropietarioService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,26 +27,24 @@ public class PropietarioController {
 
     @GetMapping
     public ResponseEntity<List<PropietariosResponseDTO>> getAllPropietarios() {
-        return ResponseEntity.ok(propietarioService.findAllPropietarios());
+        List<PropietariosResponseDTO> propietarios = propietarioService.findAllPropietarios();
+        return new ResponseEntity<>(propietarios, HttpStatus.OK);
     }
+
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<PropietariosResponseDTO> getPropietarioById(@PathVariable Long id) {
-        return ResponseEntity.ok(propietarioService.findPropietarioById(id));
+        PropietariosResponseDTO propietario = propietarioService.findPropietarioById(id);
+        return new ResponseEntity<>(propietario, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<PropietariosResponseDTO> crearPropietario(@Valid @RequestBody PropietariosRequestDTO dto) {
-        Propietarios propietario = propietarioMapper.toEntity(dto);
-        Propietarios saved = propietarioService.crearPropietario(propietario);
-        return ResponseEntity.ok(propietarioMapper.toDTO(saved));
+        PropietariosResponseDTO creado = propietarioService.crearPropietario(dto);
+        return new ResponseEntity<>(creado, HttpStatus.CREATED);
     }
 
-    @PostMapping("/{id}/alojamientos")
-    public ResponseEntity<Alojamiento> registrarAlojamiento(
-            @PathVariable Long id,
-            @RequestBody Alojamiento alojamiento,
-            @RequestBody(required = false) List<ImagenesAlojamiento> imagenes) {
-        return ResponseEntity.ok(propietarioService.registrarAlojamiento(id, alojamiento, imagenes));
-    }
+
 }

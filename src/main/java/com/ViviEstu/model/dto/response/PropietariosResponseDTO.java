@@ -8,6 +8,5 @@ public class PropietariosResponseDTO {
     private String nombre;
     private String correo;
     private String telefono;
-    private String urlPerfil;
     private Integer dni;
 }

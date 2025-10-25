@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EstudiantesRepository extends JpaRepository<Estudiantes, Long> {
 
+    boolean existsByNombreAndApellidos(String nombre, String apellidos);
+
 }

@@ -30,6 +30,9 @@ public class Alojamiento {
     @Column(nullable = false, length = 100)
     private String direccion;
 
+    @Column(name = "nro_partida", nullable = false, length = 8)
+    private String nroPartida;
+
     @Column(name = "precio_mensual", nullable = false)
     private BigDecimal precioMensual;
 
@@ -53,9 +56,5 @@ public class Alojamiento {
     @JoinColumn(name = "propietarios_id", nullable = false)
     private Propietarios propietario;
 
-    @OneToMany()
-    private List<ImagenesAlojamiento> imagenes = new ArrayList<>();
 
-    @OneToMany()
-    private List<Transporte> transportes = new ArrayList<>();
 }

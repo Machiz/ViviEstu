@@ -2,6 +2,7 @@ package com.ViviEstu.model.entity;
 
 import jakarta.persistence.*;
 
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +18,14 @@ public class Propietarios {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "nombre", length = 50, nullable = false)
+    @Column(name = "nombre", length = 20, nullable = false)
+    @Size(max = 20, message = "El nombre no debe exceder los 20 caracteres")
     private String nombre;
+
+    @Column(name = "apellidos", length = 50, nullable = false)
+    @Size(max = 50, message = "Los apellidos no debe exceder los 50 caracteres")
+    private String apellidos;
+
 
     @Column(name = "correo", length = 50, nullable = false)
     private String correo;

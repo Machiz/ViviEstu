@@ -7,20 +7,20 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name = "imagenes_alojmnts")
+@Table(name = "ImagenesAlojamiento")
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImagenesAlojamiento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String url;
 
-    @Column(nullable = false, columnDefinition = "text")
-    private String descripcion;
+    @Column(name = "public_id")
+    private String publicId;
 
     @ManyToOne
     @JoinColumn(name = "alojamientos_id", nullable = false)

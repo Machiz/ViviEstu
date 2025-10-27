@@ -23,16 +23,12 @@ import java.util.List;
 public class PropietarioController {
 
     private final PropietarioService propietarioService;
-    private final PropietariosMapper propietarioMapper;
 
     @GetMapping
     public ResponseEntity<List<PropietariosResponseDTO>> getAllPropietarios() {
         List<PropietariosResponseDTO> propietarios = propietarioService.findAllPropietarios();
         return new ResponseEntity<>(propietarios, HttpStatus.OK);
     }
-
-
-
 
     @GetMapping("/{id}")
     public ResponseEntity<PropietariosResponseDTO> getPropietarioById(@PathVariable Long id) {
@@ -46,5 +42,10 @@ public class PropietarioController {
         return new ResponseEntity<>(creado, HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePropietario(@PathVariable long id) {
+        propietarioService.deletePropietario(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
 }

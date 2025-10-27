@@ -1,11 +1,14 @@
 package com.ViviEstu.model.dto.request;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,6 +27,9 @@ public class AlojamientoRequestDTO {
     @NotNull(message = "El precio mensual es obligatorio")
     private BigDecimal precioMensual;
 
+    @NotBlank(message = "El numero de partida es obligatorio")
+    private String nroPartida;
+
     @NotNull(message = "Debe indicar si está alquilado")
     private Boolean alquilado;
 
@@ -32,4 +38,12 @@ public class AlojamientoRequestDTO {
 
     @NotNull(message = "El ID de la zona es obligatorio")
     private Long distritoId;
+
+    private List<MultipartFile> imagenes;
+
+    private List<String> transportes;
+
+    private List<Long> universidadesIds;
+
+
 }

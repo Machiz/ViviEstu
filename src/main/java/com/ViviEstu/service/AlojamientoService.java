@@ -1,23 +1,23 @@
 package com.ViviEstu.service;
 
+import com.ViviEstu.exception.DuplicateResourceException;
 import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.AlojamientoMapper;
 import com.ViviEstu.model.dto.request.AlojamientoRequestDTO;
 import com.ViviEstu.model.dto.response.AlojamientoResponseDTO;
-import com.ViviEstu.model.entity.Alojamiento;
-import com.ViviEstu.model.entity.Distrito;
-import com.ViviEstu.model.entity.Estudiantes;
-import com.ViviEstu.model.entity.Propietarios;
-import com.ViviEstu.repository.AlojamientoRepository;
-import com.ViviEstu.repository.DistritoRepository;
-import com.ViviEstu.repository.PropietariosRepository;
+import com.ViviEstu.model.entity.*;
+import com.ViviEstu.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.ViviEstu.model.dto.response.CoordenadasDTO;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -26,8 +26,14 @@ public class AlojamientoService {
     private final AlojamientoRepository alojamientoRepository;
     private final DistritoRepository distritoRepository;
     private final PropietariosRepository propietariosRepository;
+    private final ImagenesRepository imagenesRepository;
     private final AlojamientoMapper mapper;
     private final GeocodingService geocodingService;
+    private final DatosPropiedadesRepository datosPropiedadesRepository;
+    private final TransporteRepository transporteRepository;
+    private final UniversidadRepository universidadRepository;
+    private final UniAlojamientoRepository uniAlojamientoRepository;
+    CloudinaryService cloudinaryService;
 
     @Transactional(readOnly = true)
     public List<AlojamientoResponseDTO> getAllAlojamientos() {
@@ -42,48 +48,191 @@ public class AlojamientoService {
     }
 
     @Transactional
-    public AlojamientoResponseDTO createAlojamiento(AlojamientoRequestDTO dto) {
+    public AlojamientoResponseDTO crearAlojamiento(AlojamientoRequestDTO dto) throws IOException {
+
+        if (alojamientoRepository.existsByNroPartida(dto.getNroPartida())){
+            throw new DuplicateResourceException("Alquiler ya publicado");
+        }
+
+        Distrito distrito = distritoRepository.findById(dto.getDistritoId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Distrito no encontrado con id: " + dto.getDistritoId()));
 
         Propietarios propietario = propietariosRepository.findById(dto.getPropietarioId())
-                .orElseThrow(() -> new ResourceNotFoundException("Propietario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Propietario no encontrado con id: " + dto.getPropietarioId()));
 
-        Distrito zona = distritoRepository.findById(dto.getDistritoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Zona no encontrada"));
+
+        if (!datosPropiedadesRepository.existsByDniPropietarioAndNroPartida(propietario.getDni(),dto.getNroPartida())) {
+            throw new ResourceNotFoundException("Datos no encontrados en base de datos");
+        }
+
+
+        if (dto.getImagenes() == null || dto.getImagenes().isEmpty()) {
+            throw new ResourceNotFoundException("Debe subir al menos una imagen para el alojamiento.");
+        }
+
 
         Alojamiento alojamiento = new Alojamiento();
         alojamiento.setTitulo(dto.getTitulo());
         alojamiento.setDescripcion(dto.getDescripcion());
         alojamiento.setDireccion(dto.getDireccion());
         alojamiento.setPrecioMensual(dto.getPrecioMensual());
-        CoordenadasDTO coords = geocodingService.getCoordinates(dto.getDireccion());
-        alojamiento.setLatitud(coords.getLatitude());
-        alojamiento.setLongitud(coords.getLongitude());
-        alojamiento.setAlquilado(dto.getAlquilado());
-        alojamiento.setPropietario(propietario);
-        alojamiento.setDistrito(zona);
         alojamiento.setFecha(new Timestamp(System.currentTimeMillis()));
+        alojamiento.setAlquilado(false);
+        alojamiento.setNroPartida(dto.getNroPartida());
+        alojamiento.setDistrito(distrito);
+        alojamiento.setPropietario(propietario);
 
-        Alojamiento saved = alojamientoRepository.save(alojamiento);
-        return mapper.convertToDTO(saved);
+        alojamiento = alojamientoRepository.save(alojamiento);
+
+        List<ImagenesAlojamiento> imagenes = new ArrayList<>();
+
+        for (MultipartFile imagen : dto.getImagenes()) {
+            Map uploadResult = cloudinaryService.subirImagen(imagen);
+
+            String url = uploadResult.get("secure_url").toString();
+            String publicId = uploadResult.get("public_id").toString();
+
+            ImagenesAlojamiento img = new ImagenesAlojamiento();
+            img.setUrl(url);
+            img.setPublicId(publicId);
+            img.setAlojamiento(alojamiento);
+
+            imagenes.add(imagenesRepository.save(img));
+        }
+
+        if (dto.getTransportes() != null && !dto.getTransportes().isEmpty()) {
+            List<Transporte> transportes = new ArrayList<>();
+            for (String nombre : dto.getTransportes()) {
+                Transporte t = new Transporte();
+                t.setNombre(nombre);
+                t.setAlojamiento(alojamiento);
+                transportes.add(t);
+            }
+            transporteRepository.saveAll(transportes);
+        }
+
+        if (dto.getUniversidadesIds() != null && !dto.getUniversidadesIds().isEmpty()) {
+            List<UniAlojamiento> relaciones = new ArrayList<>();
+
+            for (Long universidadId : dto.getUniversidadesIds()) {
+                Universidad universidad = universidadRepository.findById(universidadId)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Universidad no encontrada con id: " + universidadId));
+
+                UniAlojamiento relacion = new UniAlojamiento();
+                relacion.setAlojamiento(alojamiento);
+                relacion.setUniversidad(universidad);
+
+                relaciones.add(relacion);
+            }
+
+            uniAlojamientoRepository.saveAll(relaciones);
+        }
+
+
+        return mapper.convertToDTO(alojamiento);
     }
+
 
     @Transactional
     public AlojamientoResponseDTO updateAlojamiento(Long id, AlojamientoRequestDTO dto) {
         Alojamiento alojamiento = alojamientoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con id: " + id));
 
-        alojamiento.setTitulo(dto.getTitulo());
-        alojamiento.setDescripcion(dto.getDescripcion());
-        alojamiento.setDireccion(dto.getDireccion());
-        alojamiento.setPrecioMensual(dto.getPrecioMensual());
-        alojamiento.setAlquilado(dto.getAlquilado());
+        if (dto.getDistritoId() != null && !dto.getDistritoId().equals(alojamiento.getDistrito().getId())) {
+            throw new IllegalArgumentException("No se puede cambiar el distrito del alojamiento.");
+        }
+
+        if (dto.getPropietarioId() != null && !dto.getPropietarioId().equals(alojamiento.getPropietario().getId())) {
+            throw new IllegalArgumentException("No se puede cambiar el propietario del alojamiento.");
+        }
+
+            alojamiento.setTitulo(dto.getTitulo());
+            alojamiento.setDescripcion(dto.getDescripcion());
+            alojamiento.setDireccion(dto.getDireccion());
+            alojamiento.setPrecioMensual(dto.getPrecioMensual());
+            alojamiento.setAlquilado(dto.getAlquilado());
 
         Alojamiento updated = alojamientoRepository.save(alojamiento);
+
         return mapper.convertToDTO(updated);
     }
 
     @Transactional
-    public void deleteAlojamiento(Long id) {
-        alojamientoRepository.deleteById(id);
+    public AlojamientoResponseDTO agregarImagenes(Long alojamientoId, List<MultipartFile> nuevasImagenes) throws IOException {
+
+        Alojamiento alojamiento = alojamientoRepository.findById(alojamientoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con id: " + alojamientoId));
+
+        if (nuevasImagenes == null || nuevasImagenes.isEmpty()) {
+            throw new IllegalArgumentException("Debe subir al menos una imagen para agregar.");
+        }
+
+        for (MultipartFile imagen : nuevasImagenes) {
+            Map uploadResult = cloudinaryService.subirImagen(imagen);
+            String url = uploadResult.get("secure_url").toString();
+            String publicId = uploadResult.get("public_id").toString();
+
+            ImagenesAlojamiento img = new ImagenesAlojamiento();
+            img.setUrl(url);
+            img.setPublicId(publicId);
+            img.setAlojamiento(alojamiento);
+
+            imagenesRepository.save(img);
+        }
+
+        return mapper.convertToDTO(alojamiento);
     }
+
+
+
+    @Transactional
+    public void deleteAlojamiento(Long id) {
+
+        Alojamiento alojamiento = alojamientoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con id: " + id));
+
+        List<ImagenesAlojamiento> imagenes = imagenesRepository.findByAlojamientoId(id);
+
+
+        for (ImagenesAlojamiento img : imagenes) {
+            try {
+                cloudinaryService.eliminarImagen(img.getPublicId());
+            } catch (Exception e) {
+                System.err.println("Error al eliminar imagen de Cloudinary: " + img.getPublicId());
+            }
+        }
+
+        imagenesRepository.deleteAll(imagenes);
+
+        alojamientoRepository.delete(alojamiento);
+    }
+
+    @Transactional
+    public void eliminarImagen(Long alojamientoId, Long imagenId) throws IOException {
+
+        Alojamiento alojamiento = alojamientoRepository.findById(alojamientoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con id: " + alojamientoId));
+
+        List<ImagenesAlojamiento> imagenes = imagenesRepository.findByAlojamientoId(alojamientoId);
+
+        if (imagenes.size() <= 1) {
+            throw new IllegalStateException("El alojamiento debe tener al menos una imagen.");
+        }
+
+        ImagenesAlojamiento imagen = imagenesRepository.findById(imagenId)
+                .orElseThrow(() -> new ResourceNotFoundException("Imagen no encontrada con id: " + imagenId));
+
+
+        if (!imagen.getAlojamiento().getId().equals(alojamientoId)) {
+            throw new IllegalArgumentException("La imagen no pertenece al alojamiento especificado.");
+        }
+
+        cloudinaryService.eliminarImagen(imagen.getPublicId());
+
+        imagenesRepository.delete(imagen);
+    }
+
 }

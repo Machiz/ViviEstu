@@ -1,22 +1,16 @@
 package com.ViviEstu.service;
 
-import com.ViviEstu.exception.BadRequestException;
+import com.ViviEstu.exception.DuplicateResourceException;
 import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.PropietariosMapper;
 import com.ViviEstu.model.dto.request.PropietariosRequestDTO;
 import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
-import com.ViviEstu.model.entity.Alojamiento;
-import com.ViviEstu.model.entity.ImagenesAlojamiento;
 import com.ViviEstu.model.entity.Propietarios;
-import com.ViviEstu.repository.AlojamientoRepository;
 import com.ViviEstu.repository.PropietarioRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,11 +38,19 @@ public class PropietarioService {
 
     @Transactional
     public PropietariosResponseDTO crearPropietario(PropietariosRequestDTO dto) {
+
+        if (propietarioRepository.existsByNombreAndApellidos(dto.getNombre(), dto.getApellidos())){
+            throw new DuplicateResourceException("Propietario existente");
+        }
+
         Propietarios propietario = propietariosMapper.toEntity(dto);
         propietarioRepository.save(propietario);
         return propietariosMapper.toDTO(propietario);
     }
 
-
+    @Transactional
+    public void deletePropietario(Long id) {
+        propietarioRepository.deleteById(id);
+    }
 
 }

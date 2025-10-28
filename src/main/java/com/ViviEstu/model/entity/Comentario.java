@@ -19,11 +19,11 @@ public class Comentario {
     @Column(nullable = false, columnDefinition = "text")
     private String contenido;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "alojamientos_id", nullable = false)
     private Alojamiento alojamiento;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "estudiantes_id", nullable = false)
     private Estudiantes estudiante;
 }

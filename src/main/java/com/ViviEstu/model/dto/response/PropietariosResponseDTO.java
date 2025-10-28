@@ -9,5 +9,5 @@ public class PropietariosResponseDTO {
     private String apellidos;
     private String correo;
     private String telefono;
-    private Integer dni;
+    private String dni;
 }

@@ -29,6 +29,18 @@ public class SolicitudController {
         return ResponseEntity.ok(solicitudesService.obtenerPorId(id));
     }
 
+    @PutMapping("/{id}/aceptar")
+    public ResponseEntity<SolicitudResponseDTO> aceptarSolicitud(@PathVariable Long id) {
+        SolicitudResponseDTO response = solicitudesService.actualizarEstado(id, "ACEPTADO");
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/rechazar")
+    public ResponseEntity<SolicitudResponseDTO> rechazarSolicitud(@PathVariable Long id) {
+        SolicitudResponseDTO response = solicitudesService.actualizarEstado(id, "RECHAZADO");
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<SolicitudResponseDTO> registrar(@Valid @RequestBody SolicitudRequestDTO request) {
         return ResponseEntity.ok(solicitudesService.registrar(request));

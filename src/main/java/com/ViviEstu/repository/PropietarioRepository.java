@@ -1,9 +1,0 @@
-package com.ViviEstu.repository;
-
-import com.ViviEstu.model.entity.Propietarios;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface PropietarioRepository  extends JpaRepository<Propietarios, Long> {
-
-    boolean existsByNombreAndApellidos(String nombre, String apellidos);
-}

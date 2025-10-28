@@ -5,6 +5,7 @@ import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.AlojamientoMapper;
 import com.ViviEstu.model.dto.request.AlojamientoRequestDTO;
 import com.ViviEstu.model.dto.response.AlojamientoResponseDTO;
+import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
 import com.ViviEstu.model.entity.*;
 import com.ViviEstu.repository.*;
 import lombok.AllArgsConstructor;
@@ -45,6 +46,22 @@ public class AlojamientoService {
         Alojamiento alojamiento = alojamientoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con id: " + id));
         return mapper.convertToDTO(alojamiento);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AlojamientoResponseDTO> listarPorDistrito(Long distritoId) {
+        List<Alojamiento> alojamientos = alojamientoRepository.findByDistritoId(distritoId);
+        return alojamientos.stream()
+                .map(mapper::convertToDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<AlojamientoResponseDTO> listarPorUniversidad(Long universidadId) {
+        List<Alojamiento> alojamientos = alojamientoRepository.findByUniversidadId(universidadId);
+        return alojamientos.stream()
+                .map(mapper::convertToDTO)
+                .toList();
     }
 
     @Transactional
@@ -135,7 +152,6 @@ public class AlojamientoService {
         return mapper.convertToDTO(alojamiento);
     }
 
-
     @Transactional
     public AlojamientoResponseDTO updateAlojamiento(Long id, AlojamientoRequestDTO dto) {
         Alojamiento alojamiento = alojamientoRepository.findById(id)
@@ -186,7 +202,38 @@ public class AlojamientoService {
         return mapper.convertToDTO(alojamiento);
     }
 
+    @Transactional
+    public AlojamientoResponseDTO marcarComoAlquilado(Long id) {
+        Alojamiento alojamiento = alojamientoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con id: " + id));
 
+        alojamiento.setAlquilado(true);
+        alojamientoRepository.save(alojamiento);
+
+        return mapper.convertToDTO(alojamiento);
+    }
+
+    @Transactional(readOnly = true)
+    public PropietariosResponseDTO obtenerDatosVendedor(Long alojamientoId) {
+        Alojamiento alojamiento = alojamientoRepository.findById(alojamientoId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Alojamiento no encontrado con id: " + alojamientoId));
+
+        Propietarios propietario = alojamiento.getPropietario();
+        if (propietario == null) {
+            throw new ResourceNotFoundException("El alojamiento no tiene un propietario asociado.");
+        }
+
+        PropietariosResponseDTO dto = new PropietariosResponseDTO();
+        dto.setId(propietario.getId());
+        dto.setNombre(propietario.getNombre());
+        dto.setApellidos(propietario.getApellidos());
+        dto.setCorreo(propietario.getCorreo());
+        dto.setTelefono(propietario.getTelefono());
+        dto.setDni(propietario.getDni());
+
+        return dto;
+    }
 
     @Transactional
     public void deleteAlojamiento(Long id) {
@@ -206,6 +253,16 @@ public class AlojamientoService {
         }
 
         imagenesRepository.deleteAll(imagenes);
+
+        List<Transporte> transportes = transporteRepository.findByAlojamientoId(id);
+        if (!transportes.isEmpty()) {
+            transporteRepository.deleteAll(transportes);
+        }
+
+        List<UniAlojamiento> relaciones = uniAlojamientoRepository.findByAlojamientoId(id);
+        if (!relaciones.isEmpty()) {
+            uniAlojamientoRepository.deleteAll(relaciones);
+        }
 
         alojamientoRepository.delete(alojamiento);
     }

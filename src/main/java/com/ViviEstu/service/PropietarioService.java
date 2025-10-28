@@ -6,7 +6,7 @@ import com.ViviEstu.mapper.PropietariosMapper;
 import com.ViviEstu.model.dto.request.PropietariosRequestDTO;
 import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
 import com.ViviEstu.model.entity.Propietarios;
-import com.ViviEstu.repository.PropietarioRepository;
+import com.ViviEstu.repository.PropietariosRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PropietarioService {
 
-    private final PropietarioRepository propietarioRepository;
+    private final PropietariosRepository propietarioRepository;
     private final PropietariosMapper propietariosMapper;
 
     @Transactional(readOnly = true)

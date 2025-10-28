@@ -28,26 +28,15 @@ public class FavoritosService {
     private final AlojamientoRepository alojamientoRepository;
     private final FavoritosMapper favoritosMapper;
 
-    /**
-     * Agrega un alojamiento a la lista de favoritos de un estudiante.
-     * @param requestDTO DTO con los IDs del estudiante y el alojamiento.
-     * @return el DTO del favorito creado.
-     */
     @Transactional
-    public FavoritosResponseDTO addFavorito(FavoritosRequestDTO requestDTO) {
-        // Validar que el estudiante existe y está verificado (RN-024)
-        Estudiantes estudiante = estudiantesRepository.findById(requestDTO.getEstudianteId())
-                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con id: " + requestDTO.getEstudianteId()));
+    public FavoritosResponseDTO addFavorito(Long estudianteId, Long alojamientoId) {
 
+        Estudiantes estudiante = estudiantesRepository.findById(estudianteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con id: " + estudianteId));
 
-        // Validar que el alojamiento existe y está disponible
-        Alojamiento alojamiento = alojamientoRepository.findById(requestDTO.getAlojamientoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con id: " + requestDTO.getAlojamientoId()));
+        Alojamiento alojamiento = alojamientoRepository.findById(alojamientoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con id: " + alojamientoId));
 
-        // Asumiendo que la entidad Alojamiento tiene un campo booleano 'alquilado'
-        if (alojamiento.getAlquilado()) {
-            throw new BadRequestException("El alojamiento ya no está disponible.");
-        }
 
         // Validar que no se ha alcanzado el límite de favoritos (RN-023)
         if (favoritosRepository.countByEstudianteId(estudiante.getId()) >= MAX_FAVORITOS) {
@@ -59,20 +48,16 @@ public class FavoritosService {
             throw new BadRequestException("Este alojamiento ya está en tu lista de favoritos.");
         }
 
-        // Crear y guardar el nuevo favorito
+
         Favoritos favorito = new Favoritos();
         favorito.setEstudiante(estudiante);
         favorito.setAlojamiento(alojamiento);
 
         Favoritos savedFavorito = favoritosRepository.save(favorito);
+
         return favoritosMapper.convertToDTO(savedFavorito);
     }
 
-    /**
-     * Obtiene todos los favoritos de un estudiante.
-     * @param estudianteId el ID del estudiante.
-     * @return una lista de DTOs de los favoritos.
-     */
     @Transactional(readOnly = true)
     public List<FavoritosResponseDTO> getFavoritosByEstudianteId(Long estudianteId) {
         if (!estudiantesRepository.existsById(estudianteId)) {
@@ -84,23 +69,7 @@ public class FavoritosService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Elimina un favorito de la lista de un estudiante.
-     * @param favoritoId el ID del favorito a eliminar.
-     */
-    @Transactional
-    public void removeFavorito(Long favoritoId) {
-        if (!favoritosRepository.existsById(favoritoId)) {
-            throw new ResourceNotFoundException("Favorito no encontrado con id: " + favoritoId);
-        }
-        favoritosRepository.deleteById(favoritoId);
-    }
 
-    /**
-     * Elimina un favorito de la lista de un estudiante usando el ID del estudiante y el ID del alojamiento.
-     * @param estudianteId el ID del estudiante.
-     * @param alojamientoId el ID del alojamiento.
-     */
     @Transactional
     public void removeFavorito(Long estudianteId, Long alojamientoId) {
         if (!favoritosRepository.existsByEstudianteIdAndAlojamientoId(estudianteId, alojamientoId)) {
@@ -109,15 +78,4 @@ public class FavoritosService {
         favoritosRepository.deleteByEstudianteIdAndAlojamientoId(estudianteId, alojamientoId);
     }
 
-    /**
-     * Elimina un favorito de la lista de un estudiante usando el ID del favorito.
-     * @param favoritoId el ID del favorito a eliminar.
-     */
-    @Transactional
-    public void removeFavoritoById(Long favoritoId) {
-        if (!favoritosRepository.existsById(favoritoId)) {
-            throw new ResourceNotFoundException("Favorito no encontrado con id: " + favoritoId);
-        }
-        favoritosRepository.deleteById(favoritoId);
-    }
 }

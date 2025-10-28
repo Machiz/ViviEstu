@@ -2,6 +2,7 @@ package com.ViviEstu.controllers;
 
 
 import com.ViviEstu.model.dto.request.InteraccionRequestDTO;
+import com.ViviEstu.model.dto.response.InteraccionReporteResponseDTO;
 import com.ViviEstu.model.dto.response.InteraccionResponseDTO;
 import com.ViviEstu.service.InteraccionService;
 import lombok.AllArgsConstructor;
@@ -39,6 +40,12 @@ public class InteraccionController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
+    @GetMapping("/contar/{alojamientoId}")
+    public ResponseEntity<Long> contarPorAlojamiento(@PathVariable Long alojamientoId) {
+        long total = interaccionService.contarPorAlojamiento(alojamientoId);
+        return ResponseEntity.ok(total);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<InteraccionResponseDTO> updateInteraccion(
             @PathVariable Integer id,
@@ -51,5 +58,10 @@ public class InteraccionController {
     public ResponseEntity<Void> deleteInteraccion(@PathVariable Integer id) {
         interaccionService.deleteInteraccion(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/reporte/{alojamientoId}")
+    public ResponseEntity<InteraccionReporteResponseDTO> generarReportePorAlojamiento(@PathVariable Long alojamientoId) {
+        return ResponseEntity.ok(interaccionService.generarReportePorAlojamiento(alojamientoId));
     }
 }

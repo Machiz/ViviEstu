@@ -2,6 +2,7 @@ package com.ViviEstu.controllers;
 
 import com.ViviEstu.model.dto.request.AlojamientoRequestDTO;
 import com.ViviEstu.model.dto.response.AlojamientoResponseDTO;
+import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
 import com.ViviEstu.service.AlojamientoService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,25 @@ public class AlojamientoController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         alojamientoService.deleteAlojamiento(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/alquilar")
+    public ResponseEntity<AlojamientoResponseDTO> marcarComoAlquilado(@PathVariable Long id) {
+        return ResponseEntity.ok(alojamientoService.marcarComoAlquilado(id));
+    }
+    @GetMapping("/distrito/{distritoId}")
+    public ResponseEntity<List<AlojamientoResponseDTO>> listarPorDistrito(@PathVariable Long distritoId) {
+        return ResponseEntity.ok(alojamientoService.listarPorDistrito(distritoId));
+    }
+
+    @GetMapping("/universidad/{universidadId}")
+    public ResponseEntity<List<AlojamientoResponseDTO>> listarPorUniversidad(@PathVariable Long universidadId) {
+        return ResponseEntity.ok(alojamientoService.listarPorUniversidad(universidadId));
+    }
+
+    @GetMapping("/{id}/vendedor")
+    public ResponseEntity<PropietariosResponseDTO> obtenerDatosVendedor(@PathVariable Long id) {
+        return ResponseEntity.ok(alojamientoService.obtenerDatosVendedor(id));
     }
 
     @PutMapping("/{id}")

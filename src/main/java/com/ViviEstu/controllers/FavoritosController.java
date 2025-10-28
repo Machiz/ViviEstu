@@ -1,6 +1,5 @@
 package com.ViviEstu.controllers;
 
-import com.ViviEstu.model.dto.request.FavoritosRequestDTO;
 import com.ViviEstu.model.dto.response.FavoritosResponseDTO;
 import com.ViviEstu.service.FavoritosService;
 import lombok.AllArgsConstructor;
@@ -20,12 +19,12 @@ public class FavoritosController {
     @GetMapping("/estudiante/{estudianteId}")
     public ResponseEntity<List<FavoritosResponseDTO>> getFavoritosByEstudianteId(@PathVariable Long estudianteId) {
         List<FavoritosResponseDTO> favoritos = favoritosService.getFavoritosByEstudianteId(estudianteId);
-        return ResponseEntity.ok(favoritos);
+        return new ResponseEntity<>(favoritos, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<FavoritosResponseDTO> addFavorito(@RequestBody FavoritosRequestDTO requestDTO) {
-        FavoritosResponseDTO nuevoFavorito = favoritosService.addFavorito(requestDTO);
+    @PostMapping("/estudiante/{estudianteId}/alojamiento/{alojamientoId}")
+    public ResponseEntity<FavoritosResponseDTO> addFavorito(@PathVariable Long estudianteId, @PathVariable Long alojamientoId) {
+        FavoritosResponseDTO nuevoFavorito = favoritosService.addFavorito(estudianteId, alojamientoId);
         return new ResponseEntity<>(nuevoFavorito, HttpStatus.CREATED);
     }
 
@@ -33,12 +32,7 @@ public class FavoritosController {
     public ResponseEntity<Void> removeFavoritoByEstudianteAndAlojamiento(
             @PathVariable Long estudianteId, @PathVariable Long alojamientoId) {
         favoritosService.removeFavorito(estudianteId, alojamientoId);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{favoritoId}")
-    public ResponseEntity<Void> removeFavoritoById(@PathVariable Long favoritoId) {
-        favoritosService.removeFavoritoById(favoritoId);
-        return ResponseEntity.noContent().build();
-    }
 }

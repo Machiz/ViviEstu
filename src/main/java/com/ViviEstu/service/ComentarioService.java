@@ -1,5 +1,6 @@
 package com.ViviEstu.service;
 
+import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.ComentarioMapper;
 import com.ViviEstu.model.dto.request.ComentarioRequestDTO;
 import com.ViviEstu.model.dto.response.ComentarioResponseDTO;
@@ -29,18 +30,17 @@ public class ComentarioService {
     public ComentarioResponseDTO registrar(ComentarioRequestDTO request) {
 
         Estudiantes estudiante = estudiantesRepository.findById(request.getEstudianteId())
-                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado con ID: " + request.getEstudianteId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con ID: " + request.getEstudianteId()));
 
         Alojamiento alojamiento = alojamientoRepository.findById(request.getAlojamientoId())
-                .orElseThrow(() -> new RuntimeException("Alojamiento no encontrado con ID: " + request.getAlojamientoId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con ID: " + request.getAlojamientoId()));
 
 
-        Comentario comentario = comentarioMapper.toEntity(request);
-
+        Comentario comentario = new Comentario();
 
         comentario.setEstudiante(estudiante);
         comentario.setAlojamiento(alojamiento);
-
+        comentario.setContenido(request.getContenido());
 
         Comentario guardado = comentarioRepository.save(comentario);
 

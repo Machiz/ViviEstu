@@ -16,7 +16,7 @@ public class Propietarios {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "nombre", length = 20, nullable = false)
     @Size(max = 20, message = "El nombre no debe exceder los 20 caracteres")

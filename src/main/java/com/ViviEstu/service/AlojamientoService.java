@@ -67,6 +67,10 @@ public class AlojamientoService {
     @Transactional
     public AlojamientoResponseDTO crearAlojamiento(AlojamientoRequestDTO dto) throws IOException {
 
+        if (dto.getImagenes() == null || dto.getImagenes().isEmpty()) {
+            throw new ResourceNotFoundException("Debe subir al menos una imagen para el alojamiento.");
+        }
+
         if (dto.getDescripcion() == null || dto.getDescripcion().length() < 50) {
             throw new IllegalArgumentException("La descripción debe tener al menos 50 caracteres.");
         }
@@ -92,10 +96,6 @@ public class AlojamientoService {
             throw new ResourceNotFoundException("Datos no encontrados en base de datos");
         }
 
-
-        if (dto.getImagenes() == null || dto.getImagenes().isEmpty()) {
-            throw new ResourceNotFoundException("Debe subir al menos una imagen para el alojamiento.");
-        }
 
 
         Alojamiento alojamiento = new Alojamiento();

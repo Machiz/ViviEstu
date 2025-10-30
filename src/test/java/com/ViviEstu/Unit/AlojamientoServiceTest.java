@@ -176,4 +176,21 @@ public class AlojamientoServiceTest {
         verify(alojamientoRepository, never()).save(any(Alojamiento.class));
         verify(cloudinaryService, never()).subirImagen(any());
     }
+
+    @Test
+    @DisplayName("Crear Alojamiento - Sin Fotos")
+    void testCrearAlojamiento_SinFotos() {
+        // Arrange
+        alojamientoRequestDTO.setImagenes(null); // No se sube ninguna imagen
+
+        // Act & Assert
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            alojamientoService.crearAlojamiento(alojamientoRequestDTO);
+        });
+
+        assertEquals("Debe subir al menos una imagen para el alojamiento.", exception.getMessage());
+
+        // Verificar que no se guardó el alojamiento
+        verify(alojamientoRepository, never()).save(any(Alojamiento.class));
+    }
 }

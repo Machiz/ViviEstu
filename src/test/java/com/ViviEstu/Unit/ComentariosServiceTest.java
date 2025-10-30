@@ -109,4 +109,22 @@ public class ComentariosServiceTest {
         // Verificar que no se intentó guardar
         org.mockito.Mockito.verify(comentarioRepository, org.mockito.Mockito.never()).save(any());
     }
+
+    @Test
+    @DisplayName("Comentario excede longitud máxima")
+    void testRegistrarComentario_ContenidoExcedeLongitudMaxima() {
+        // Arrange
+        String contenidoLargo = "a".repeat(501); // Generar un string de 501 caracteres
+        requestDTO.setContenido(contenidoLargo);
+
+        // Act & Assert
+        IllegalArgumentException exception = org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            comentarioService.registrar(requestDTO);
+        });
+
+        assertEquals("El comentario no puede exceder los 500 caracteres", exception.getMessage());
+
+        // Verificar que no se intentó guardar
+        org.mockito.Mockito.verify(comentarioRepository, org.mockito.Mockito.never()).save(any());
+    }
 }

@@ -33,6 +33,10 @@ public class ComentarioService {
             throw new IllegalArgumentException("El contenido del comentario no puede estar vacío");
         }
 
+        if (request.getContenido().length() > 500) {
+            throw new IllegalArgumentException("El comentario no puede exceder los 500 caracteres");
+        }
+
         Estudiantes estudiante = estudiantesRepository.findById(request.getEstudianteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con ID: " + request.getEstudianteId()));
 

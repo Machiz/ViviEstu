@@ -91,6 +91,9 @@ public class AlojamientoService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Propietario no encontrado con id: " + dto.getPropietarioId()));
 
+        if (alojamientoRepository.countByPropietarioIdAndAlquiladoIsFalse(propietario.getId()) >= 20) {
+            throw new IllegalStateException("Ha alcanzado el límite máximo de 20 ofertas activas.");
+        }
 
         if (!datosPropiedadesRepository.existsByDniPropietarioAndNroPartida(propietario.getDni(),dto.getNroPartida())) {
             throw new ResourceNotFoundException("Datos no encontrados en base de datos");

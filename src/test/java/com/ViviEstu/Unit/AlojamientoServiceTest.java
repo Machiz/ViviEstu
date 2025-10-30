@@ -193,4 +193,27 @@ public class AlojamientoServiceTest {
         // Verificar que no se guardó el alojamiento
         verify(alojamientoRepository, never()).save(any(Alojamiento.class));
     }
+
+    @Test
+    @DisplayName("Crear Alojamiento - Límite de Ofertas Excedido")
+    void testCrearAlojamiento_LimiteDeOfertasExcedido() throws IOException {
+        // Arrange
+        // Simular que las validaciones previas pasan
+        when(alojamientoRepository.existsByNroPartida(anyString())).thenReturn(false);
+        when(distritoRepository.findById(anyLong())).thenReturn(Optional.of(distrito));
+        when(propietariosRepository.findById(anyLong())).thenReturn(Optional.of(propietario));
+
+        // Simular que el propietario ya tiene 20 ofertas activas
+        when(alojamientoRepository.countByPropietarioIdAndAlquiladoIsFalse(anyLong())).thenReturn(20L);
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            alojamientoService.crearAlojamiento(alojamientoRequestDTO);
+        });
+
+        assertEquals("Ha alcanzado el límite máximo de 20 ofertas activas.", exception.getMessage());
+
+        // Verificar que no se intentó guardar el alojamiento
+        verify(alojamientoRepository, never()).save(any(Alojamiento.class));
+    }
 }

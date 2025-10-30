@@ -147,4 +147,38 @@ public class ComentariosServiceTest {
         org.mockito.Mockito.verify(comentarioRepository, org.mockito.Mockito.never()).save(any());
         org.mockito.Mockito.verify(alojamientoRepository, org.mockito.Mockito.never()).findById(any());
     }
+
+    @Test
+    @DisplayName("Comentario contiene número de teléfono")
+    void testRegistrarComentario_ContieneNumeroTelefono() {
+        // Arrange
+        requestDTO.setContenido("Llámame al 987654321 para más detalles.");
+
+        // Act & Assert
+        IllegalArgumentException exception = org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            comentarioService.registrar(requestDTO);
+        });
+
+        assertEquals("El comentario no puede contener información de contacto.", exception.getMessage());
+
+        // Verificar que no se intentó guardar
+        org.mockito.Mockito.verify(comentarioRepository, org.mockito.Mockito.never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Comentario contiene dirección de correo electrónico")
+    void testRegistrarComentario_ContieneEmail() {
+        // Arrange
+        requestDTO.setContenido("Escríbeme a mi-email@correo.com para coordinar.");
+
+        // Act & Assert
+        IllegalArgumentException exception = org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            comentarioService.registrar(requestDTO);
+        });
+
+        assertEquals("El comentario no puede contener información de contacto.", exception.getMessage());
+
+        // Verificar que no se intentó guardar
+        org.mockito.Mockito.verify(comentarioRepository, org.mockito.Mockito.never()).save(any());
+    }
 }

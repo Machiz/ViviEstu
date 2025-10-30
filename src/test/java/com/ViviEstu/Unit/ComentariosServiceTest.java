@@ -92,4 +92,21 @@ public class ComentariosServiceTest {
         verify(comentarioRepository).save(any(Comentario.class));
         verify(comentarioMapper).toDTO(any(Comentario.class));
     }
+
+    @Test
+    @DisplayName("Intento de enviar comentario vacío")
+    void testRegistrarComentario_ContenidoVacio() {
+        // Arrange
+        requestDTO.setContenido("   "); // Simular contenido vacío o con espacios
+
+        // Act & Assert
+        IllegalArgumentException exception = org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            comentarioService.registrar(requestDTO);
+        });
+
+        assertEquals("El contenido del comentario no puede estar vacío", exception.getMessage());
+
+        // Verificar que no se intentó guardar
+        org.mockito.Mockito.verify(comentarioRepository, org.mockito.Mockito.never()).save(any());
+    }
 }

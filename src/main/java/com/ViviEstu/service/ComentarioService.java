@@ -29,6 +29,10 @@ public class ComentarioService {
 
     public ComentarioResponseDTO registrar(ComentarioRequestDTO request) {
 
+        if (request.getContenido() == null || request.getContenido().isBlank()) {
+            throw new IllegalArgumentException("El contenido del comentario no puede estar vacío");
+        }
+
         Estudiantes estudiante = estudiantesRepository.findById(request.getEstudianteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con ID: " + request.getEstudianteId()));
 

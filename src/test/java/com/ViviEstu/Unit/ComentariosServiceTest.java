@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import com.ViviEstu.exception.ResourceNotFoundException;
 
 import java.util.Optional;
 
@@ -126,5 +127,24 @@ public class ComentariosServiceTest {
 
         // Verificar que no se intentó guardar
         org.mockito.Mockito.verify(comentarioRepository, org.mockito.Mockito.never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Usuario anónimo intenta comentar")
+    void testRegistrarComentario_UsuarioNoAutenticado() {
+        // Arrange
+        // Simular que el estudiante no se encuentra (usuario anónimo)
+        when(estudiantesRepository.findById(requestDTO.getEstudianteId())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        ResourceNotFoundException exception = org.junit.jupiter.api.Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            comentarioService.registrar(requestDTO);
+        });
+
+        assertEquals("Estudiante no encontrado con ID: " + requestDTO.getEstudianteId(), exception.getMessage());
+
+        // Verificar que no se intentó guardar el comentario ni buscar el alojamiento
+        org.mockito.Mockito.verify(comentarioRepository, org.mockito.Mockito.never()).save(any());
+        org.mockito.Mockito.verify(alojamientoRepository, org.mockito.Mockito.never()).findById(any());
     }
 }

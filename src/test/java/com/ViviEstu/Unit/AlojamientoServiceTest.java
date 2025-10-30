@@ -1,6 +1,7 @@
 package com.ViviEstu.Unit;
 
 
+import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.AlojamientoMapper;
 import com.ViviEstu.model.dto.request.AlojamientoRequestDTO;
 import com.ViviEstu.model.dto.response.AlojamientoResponseDTO;
@@ -152,5 +153,27 @@ public class AlojamientoServiceTest {
         assertEquals("El precio debe estar entre S/200 y S/5000.", exception.getMessage());
 
         verify(alojamientoRepository, never()).save(any(Alojamiento.class));
+    }
+
+    @Test
+    @DisplayName("Crear Alojamiento - Documentación Insuficiente")
+    void testCrearAlojamiento_DocumentacionInsuficiente() throws IOException {
+        // Arrange
+        when(alojamientoRepository.existsByNroPartida(anyString())).thenReturn(false);
+        when(distritoRepository.findById(anyLong())).thenReturn(Optional.of(distrito));
+        when(propietariosRepository.findById(anyLong())).thenReturn(Optional.of(propietario));
+        // Simular que la documentación (DNI + Nro Partida) no se encuentra
+        when(datosPropiedadesRepository.existsByDniPropietarioAndNroPartida(anyString(), anyString())).thenReturn(false);
+
+        // Act & Assert
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            alojamientoService.crearAlojamiento(alojamientoRequestDTO);
+        });
+
+        assertEquals("Datos no encontrados en base de datos", exception.getMessage());
+
+        // Verificar que no se guardó el alojamiento ni se subieron imágenes
+        verify(alojamientoRepository, never()).save(any(Alojamiento.class));
+        verify(cloudinaryService, never()).subirImagen(any());
     }
 }

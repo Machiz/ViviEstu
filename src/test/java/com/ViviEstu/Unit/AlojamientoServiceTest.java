@@ -11,6 +11,7 @@ import com.ViviEstu.repository.*;
 import com.ViviEstu.service.AlojamientoService;
 import com.ViviEstu.service.CloudinaryService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -88,6 +89,7 @@ public class AlojamientoServiceTest {
     }
 
     @Test
+    @DisplayName("Crear Alojamiento - Publicación Exitosa")
     void testCrearAlojamiento_PublicacionExitosa() throws IOException {
         // Arrange
         when(alojamientoRepository.existsByNroPartida(anyString())).thenReturn(false);
@@ -118,5 +120,21 @@ public class AlojamientoServiceTest {
         verify(cloudinaryService, times(1)).subirImagen(any(MultipartFile.class));
         verify(imagenesRepository, times(1)).save(any());
         verify(mapper, times(1)).convertToDTO(any(Alojamiento.class));
+    }
+
+    @Test
+    @DisplayName("Crear Alojamiento - Descripción Corta")
+    void testCrearAlojamiento_DescripcionCorta() {
+        // Arrange
+        alojamientoRequestDTO.setDescripcion("Depa"); // Menos de 50 caracteres
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            alojamientoService.crearAlojamiento(alojamientoRequestDTO);
+        });
+
+        assertEquals("La descripción debe tener al menos 50 caracteres.", exception.getMessage());
+
+        verify(alojamientoRepository, never()).save(any(Alojamiento.class));
     }
 }

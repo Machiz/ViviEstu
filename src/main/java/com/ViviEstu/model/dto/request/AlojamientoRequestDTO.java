@@ -19,6 +19,7 @@ public class AlojamientoRequestDTO {
     private String titulo;
 
     @NotBlank(message = "La descripción es obligatoria")
+    @Size(min = 50, message = "La descripción debe tener al menos 50 caracteres")
     private String descripcion;
 
     @NotBlank(message = "La dirección es obligatoria")

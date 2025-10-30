@@ -67,6 +67,10 @@ public class AlojamientoService {
     @Transactional
     public AlojamientoResponseDTO crearAlojamiento(AlojamientoRequestDTO dto) throws IOException {
 
+        if (dto.getDescripcion() == null || dto.getDescripcion().length() < 50) {
+            throw new IllegalArgumentException("La descripción debe tener al menos 50 caracteres.");
+        }
+
         if (alojamientoRepository.existsByNroPartida(dto.getNroPartida())){
             throw new DuplicateResourceException("Alquiler ya publicado");
         }

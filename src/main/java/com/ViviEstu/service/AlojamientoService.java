@@ -71,6 +71,10 @@ public class AlojamientoService {
             throw new IllegalArgumentException("La descripción debe tener al menos 50 caracteres.");
         }
 
+        if (dto.getPrecioMensual().compareTo(new java.math.BigDecimal("200.00")) < 0 || dto.getPrecioMensual().compareTo(new java.math.BigDecimal("5000.00")) > 0) {
+            throw new IllegalArgumentException("El precio debe estar entre S/200 y S/5000.");
+        }
+
         if (alojamientoRepository.existsByNroPartida(dto.getNroPartida())){
             throw new DuplicateResourceException("Alquiler ya publicado");
         }

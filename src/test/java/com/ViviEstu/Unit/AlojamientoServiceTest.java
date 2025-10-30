@@ -137,4 +137,20 @@ public class AlojamientoServiceTest {
 
         verify(alojamientoRepository, never()).save(any(Alojamiento.class));
     }
+
+    @Test
+    @DisplayName("Crear Alojamiento - Precio Fuera de Rango (Menor)")
+    void testCrearAlojamiento_PrecioMenorAlMinimo() {
+        // Arrange
+        alojamientoRequestDTO.setPrecioMensual(new BigDecimal("100.00")); // Menor a 200
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            alojamientoService.crearAlojamiento(alojamientoRequestDTO);
+        });
+
+        assertEquals("El precio debe estar entre S/200 y S/5000.", exception.getMessage());
+
+        verify(alojamientoRepository, never()).save(any(Alojamiento.class));
+    }
 }

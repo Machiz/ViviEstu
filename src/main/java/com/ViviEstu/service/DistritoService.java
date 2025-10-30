@@ -1,5 +1,7 @@
 package com.ViviEstu.service;
 
+import com.ViviEstu.exception.NoDataFoundException;
+import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.DistritoMapper;
 import com.ViviEstu.repository.DistritoRepository;
 import com.ViviEstu.model.dto.request.DistritoRequestDTO;
@@ -59,7 +61,12 @@ public class DistritoService {
     @Transactional(readOnly = true)
     public DistritoResponseDTO getDistritoById(Long id) {
         Distrito distrito = distritoRepository.findById(id)
-                .orElseThrow(() -> new com.ViviEstu.exception.ResourceNotFoundException("Distrito no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Distrito no encontrado con id: " + id));
+
+        if ((distrito.getDescripcion() == null || distrito.getDescripcion().isEmpty()) &&
+                distrito.getPrecioProm() == null) {
+            throw new NoDataFoundException("Aún no tenemos información disponible para este distrito");
+        }
         return distritoMapper.convertToDTO(distrito);
     }
 

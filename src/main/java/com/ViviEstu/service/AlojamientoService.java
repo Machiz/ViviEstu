@@ -228,7 +228,7 @@ public class AlojamientoService {
         dto.setId(propietario.getId());
         dto.setNombre(propietario.getNombre());
         dto.setApellidos(propietario.getApellidos());
-        dto.setCorreo(propietario.getCorreo());
+        dto.setCorreo(propietario.getUser().getCorreo());
         dto.setTelefono(propietario.getTelefono());
         dto.setDni(propietario.getDni());
 

@@ -3,6 +3,7 @@ package com.ViviEstu.mapper;
 
 import com.ViviEstu.model.dto.request.EstudiantesRequestDTO;
 import com.ViviEstu.model.dto.response.EstudianteResponseDTO;
+import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
 import com.ViviEstu.model.entity.Estudiantes;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -20,7 +21,9 @@ public class EstudianteMapper {
 
 
     public EstudianteResponseDTO convertToDTO(Estudiantes estudiante) {
-        return modelMapper.map(estudiante, EstudianteResponseDTO.class);
+        EstudianteResponseDTO dto = modelMapper.map(estudiante, EstudianteResponseDTO.class);
+        dto.setCorreo(estudiante.getUser().getCorreo());
+        return dto;
     }
 
     public List<EstudianteResponseDTO> convertToListDTO(List<Estudiantes> estudiantes) {

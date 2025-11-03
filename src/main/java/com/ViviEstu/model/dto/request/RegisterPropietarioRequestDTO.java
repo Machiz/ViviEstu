@@ -3,10 +3,14 @@ package com.ViviEstu.model.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class PropietariosRequestDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+public class RegisterPropietarioRequestDTO {
 
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
@@ -26,5 +30,4 @@ public class PropietariosRequestDTO {
 
     @NotNull(message = "El DNI es obligatorio")
     private String dni;
-
 }

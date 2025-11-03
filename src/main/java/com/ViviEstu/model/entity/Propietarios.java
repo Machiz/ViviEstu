@@ -26,15 +26,12 @@ public class Propietarios {
     @Size(max = 50, message = "Los apellidos no debe exceder los 50 caracteres")
     private String apellidos;
 
-
-    @Column(name = "correo", length = 50, nullable = false)
-    private String correo;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false, unique = true)
+    private User user;
 
     @Column(name = "telefono", length = 20)
     private String telefono;
-
-    @Column(name = "contrasenia", length = 50, nullable = false)
-    private String contrasenia;
 
     @Column(name = "dni", length = 8, nullable = false)
     private String dni;

@@ -1,6 +1,7 @@
 package com.ViviEstu.mapper;
 
 import com.ViviEstu.model.dto.request.PropietariosRequestDTO;
+import com.ViviEstu.model.dto.response.AlojamientoResponseDTO;
 import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
 import com.ViviEstu.model.entity.Propietarios;
 import org.modelmapper.ModelMapper;
@@ -18,7 +19,9 @@ public class PropietariosMapper {
     }
 
     public PropietariosResponseDTO toDTO(Propietarios entity) {
-        return mapper.map(entity, PropietariosResponseDTO.class);
+        PropietariosResponseDTO dto = mapper.map(entity, PropietariosResponseDTO.class);
+        dto.setCorreo(entity.getUser().getCorreo());
+        return dto;
     }
 
     public List<PropietariosResponseDTO> toListDTO(List<Propietarios> list) {

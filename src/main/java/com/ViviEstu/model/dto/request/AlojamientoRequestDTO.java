@@ -19,12 +19,15 @@ public class AlojamientoRequestDTO {
     private String titulo;
 
     @NotBlank(message = "La descripción es obligatoria")
+    @Size(min = 50, message = "La descripción debe tener al menos 50 caracteres")
     private String descripcion;
 
     @NotBlank(message = "La dirección es obligatoria")
     private String direccion;
 
     @NotNull(message = "El precio mensual es obligatorio")
+    @DecimalMin(value = "200.00", message = "El precio debe ser de al menos S/200")
+    @DecimalMax(value = "5000.00", message = "El precio no puede exceder los S/5000")
     private BigDecimal precioMensual;
 
     @NotBlank(message = "El numero de partida es obligatorio")

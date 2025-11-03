@@ -15,5 +15,7 @@ public interface AlojamientoRepository extends JpaRepository<Alojamiento, Long> 
 
     @Query("SELECT ua.alojamiento FROM UniAlojamiento ua WHERE ua.universidad.id = :universidadId")
     List<Alojamiento> findByUniversidadId(@Param("universidadId") Long universidadId);
+
+    Long countByPropietarioIdAndAlquiladoIsFalse(long l);
 }
 

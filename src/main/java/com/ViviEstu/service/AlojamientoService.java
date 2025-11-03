@@ -67,6 +67,18 @@ public class AlojamientoService {
     @Transactional
     public AlojamientoResponseDTO crearAlojamiento(AlojamientoRequestDTO dto) throws IOException {
 
+        if (dto.getImagenes() == null || dto.getImagenes().isEmpty()) {
+            throw new ResourceNotFoundException("Debe subir al menos una imagen para el alojamiento.");
+        }
+
+        if (dto.getDescripcion() == null || dto.getDescripcion().length() < 50) {
+            throw new IllegalArgumentException("La descripción debe tener al menos 50 caracteres.");
+        }
+
+        if (dto.getPrecioMensual().compareTo(new java.math.BigDecimal("200.00")) < 0 || dto.getPrecioMensual().compareTo(new java.math.BigDecimal("5000.00")) > 0) {
+            throw new IllegalArgumentException("El precio debe estar entre S/200 y S/5000.");
+        }
+
         if (alojamientoRepository.existsByNroPartida(dto.getNroPartida())){
             throw new DuplicateResourceException("Alquiler ya publicado");
         }
@@ -79,15 +91,14 @@ public class AlojamientoService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Propietario no encontrado con id: " + dto.getPropietarioId()));
 
+        if (alojamientoRepository.countByPropietarioIdAndAlquiladoIsFalse(propietario.getId()) >= 20) {
+            throw new IllegalStateException("Ha alcanzado el límite máximo de 20 ofertas activas.");
+        }
 
         if (!datosPropiedadesRepository.existsByDniPropietarioAndNroPartida(propietario.getDni(),dto.getNroPartida())) {
             throw new ResourceNotFoundException("Datos no encontrados en base de datos");
         }
 
-
-        if (dto.getImagenes() == null || dto.getImagenes().isEmpty()) {
-            throw new ResourceNotFoundException("Debe subir al menos una imagen para el alojamiento.");
-        }
 
 
         Alojamiento alojamiento = new Alojamiento();

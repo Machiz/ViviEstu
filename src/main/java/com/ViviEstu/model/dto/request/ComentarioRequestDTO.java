@@ -18,5 +18,6 @@ public class ComentarioRequestDTO {
     private Long estudianteId;
 
     @NotBlank(message = "El contenido del comentario no puede estar vacío")
+    @jakarta.validation.constraints.Size(max = 500, message = "El comentario no puede exceder los 500 caracteres")
     private String contenido;
 }

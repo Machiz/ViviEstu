@@ -29,6 +29,18 @@ public class ComentarioService {
 
     public ComentarioResponseDTO registrar(ComentarioRequestDTO request) {
 
+        if (request.getContenido() == null || request.getContenido().isBlank()) {
+            throw new IllegalArgumentException("El contenido del comentario no puede estar vacío");
+        }
+
+        if (request.getContenido().length() > 500) {
+            throw new IllegalArgumentException("El comentario no puede exceder los 500 caracteres");
+        }
+
+        if (containsContactInfo(request.getContenido())) {
+            throw new IllegalArgumentException("El comentario no puede contener información de contacto.");
+        }
+
         Estudiantes estudiante = estudiantesRepository.findById(request.getEstudianteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con ID: " + request.getEstudianteId()));
 
@@ -55,5 +67,13 @@ public class ComentarioService {
 
     public void eliminarComentario(Long id) {
         comentarioRepository.deleteById(id);
+    }
+
+    private boolean containsContactInfo(String text) {
+        // Expresión regular para detectar números de teléfono (simplificada)
+        String phoneRegex = ".*\\d{9,}.*";
+        // Expresión regular para detectar direcciones de correo electrónico
+        String emailRegex = ".*[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}.*";
+        return text.matches(phoneRegex) || text.matches(emailRegex);
     }
 }

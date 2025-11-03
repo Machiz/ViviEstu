@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,5 +17,5 @@ public class DistritoResponseDTO {
     private String tipo;
     private String urlImg;
     private Integer seguridad;
+    private LocalDate lastUpdate;
 }
-

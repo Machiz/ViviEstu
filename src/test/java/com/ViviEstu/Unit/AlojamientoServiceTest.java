@@ -208,4 +208,43 @@ public class AlojamientoServiceTest {
     }
 
 
+    @Test
+    @DisplayName("Carga exitosa del mapa con ofertas")
+    void testGetAllAlojamientos_CargaExitosaParaMapa() {
+        // Arrange
+        Alojamiento alojamiento1 = new Alojamiento();
+        alojamiento1.setId(1L);
+        alojamiento1.setTitulo("Alojamiento 1");
+
+        Alojamiento alojamiento2 = new Alojamiento();
+        alojamiento2.setId(2L);
+        alojamiento2.setTitulo("Alojamiento 2");
+
+        java.util.List<Alojamiento> listaAlojamientos = java.util.Arrays.asList(alojamiento1, alojamiento2);
+
+        AlojamientoResponseDTO dto1 = new AlojamientoResponseDTO();
+        dto1.setId(1L);
+        dto1.setTitulo("Alojamiento 1");
+
+        AlojamientoResponseDTO dto2 = new AlojamientoResponseDTO();
+        dto2.setId(2L);
+        dto2.setTitulo("Alojamiento 2");
+
+        java.util.List<AlojamientoResponseDTO> listaDtos = java.util.Arrays.asList(dto1, dto2);
+
+        when(alojamientoRepository.findAll()).thenReturn(listaAlojamientos);
+        when(mapper.convertToListDTO(listaAlojamientos)).thenReturn(listaDtos);
+
+        // Act
+        java.util.List<AlojamientoResponseDTO> resultado = alojamientoService.getAllAlojamientos();
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+        assertEquals(listaDtos, resultado);
+
+        verify(alojamientoRepository, times(1)).findAll();
+        verify(mapper, times(1)).convertToListDTO(listaAlojamientos);
+    }
+
 }

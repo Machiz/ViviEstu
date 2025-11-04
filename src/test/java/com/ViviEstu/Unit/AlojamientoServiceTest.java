@@ -247,4 +247,26 @@ public class AlojamientoServiceTest {
         verify(mapper, times(1)).convertToListDTO(listaAlojamientos);
     }
 
+    @Test
+    @DisplayName("Navegación a zona sin ofertas")
+    void testGetAllAlojamientos_NavegacionZonaSinOfertas() {
+        // Arrange
+        // Simula que el repositorio no encuentra alojamientos
+        when(alojamientoRepository.findAll()).thenReturn(Collections.emptyList());
+        when(mapper.convertToListDTO(Collections.emptyList())).thenReturn(Collections.emptyList());
+
+        // Act
+        // Intenta obtener todos los alojamientos
+        java.util.List<AlojamientoResponseDTO> resultado = alojamientoService.getAllAlojamientos();
+
+        // Assert
+        // El resultado debe ser una lista vacía, no nula
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+
+        // Verifica que se llamó al repositorio
+        verify(alojamientoRepository, times(1)).findAll();
+        verify(mapper, times(1)).convertToListDTO(Collections.emptyList());
+    }
+
 }

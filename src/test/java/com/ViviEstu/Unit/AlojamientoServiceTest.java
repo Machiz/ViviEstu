@@ -130,9 +130,7 @@ public class AlojamientoServiceTest {
         alojamientoRequestDTO.setDescripcion("Depa"); // Menos de 50 caracteres
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            alojamientoService.crearAlojamiento(alojamientoRequestDTO);
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> alojamientoService.crearAlojamiento(alojamientoRequestDTO));
 
         assertEquals("La descripción debe tener al menos 50 caracteres.", exception.getMessage());
 
@@ -146,9 +144,7 @@ public class AlojamientoServiceTest {
         alojamientoRequestDTO.setPrecioMensual(new BigDecimal("100.00")); // Menor a 200
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            alojamientoService.crearAlojamiento(alojamientoRequestDTO);
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> alojamientoService.crearAlojamiento(alojamientoRequestDTO));
 
         assertEquals("El precio debe estar entre S/200 y S/5000.", exception.getMessage());
 
@@ -166,9 +162,7 @@ public class AlojamientoServiceTest {
         when(datosPropiedadesRepository.existsByDniPropietarioAndNroPartida(anyString(), anyString())).thenReturn(false);
 
         // Act & Assert
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            alojamientoService.crearAlojamiento(alojamientoRequestDTO);
-        });
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> alojamientoService.crearAlojamiento(alojamientoRequestDTO));
 
         assertEquals("Datos no encontrados en base de datos", exception.getMessage());
 
@@ -184,9 +178,7 @@ public class AlojamientoServiceTest {
         alojamientoRequestDTO.setImagenes(null); // No se sube ninguna imagen
 
         // Act & Assert
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            alojamientoService.crearAlojamiento(alojamientoRequestDTO);
-        });
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> alojamientoService.crearAlojamiento(alojamientoRequestDTO));
 
         assertEquals("Debe subir al menos una imagen para el alojamiento.", exception.getMessage());
 
@@ -196,7 +188,7 @@ public class AlojamientoServiceTest {
 
     @Test
     @DisplayName("Crear Alojamiento - Límite de Ofertas Excedido")
-    void testCrearAlojamiento_LimiteDeOfertasExcedido() throws IOException {
+    void testCrearAlojamiento_LimiteDeOfertasExcedido() {
         // Arrange
         // Simular que las validaciones previas pasan
         when(alojamientoRepository.existsByNroPartida(anyString())).thenReturn(false);
@@ -207,13 +199,13 @@ public class AlojamientoServiceTest {
         when(alojamientoRepository.countByPropietarioIdAndAlquiladoIsFalse(anyLong())).thenReturn(20L);
 
         // Act & Assert
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            alojamientoService.crearAlojamiento(alojamientoRequestDTO);
-        });
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> alojamientoService.crearAlojamiento(alojamientoRequestDTO));
 
         assertEquals("Ha alcanzado el límite máximo de 20 ofertas activas.", exception.getMessage());
 
         // Verificar que no se intentó guardar el alojamiento
         verify(alojamientoRepository, never()).save(any(Alojamiento.class));
     }
+
+
 }

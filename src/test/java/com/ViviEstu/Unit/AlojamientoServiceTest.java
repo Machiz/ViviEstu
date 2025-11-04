@@ -388,7 +388,7 @@ public class AlojamientoServiceTest {
         verify(alojamientoRepository, times(1)).findAll();
         verify(mapper, times(1)).convertToListDTO(listaAlojamientos);
     }
-}
+
     @DisplayName("Actualizar Alojamiento - No Encontrado")
     void testUpdateAlojamiento_NoEncontrado() {
         // Arrange

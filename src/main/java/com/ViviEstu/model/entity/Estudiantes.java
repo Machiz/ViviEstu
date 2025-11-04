@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,11 +23,9 @@ public class Estudiantes {
     @Column(name = "apellidos", nullable = false, length = 50)
     private String apellidos;
 
-    @Column(name = "correo", nullable = false, unique = true, length = 50)
-    private String correo;
-
-    @Column(nullable = false, length = 20)
-    private String contrasenia;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false, unique = true)
+    private User user;
 
     @Column(nullable = false, length = 15)
     private String telefono;

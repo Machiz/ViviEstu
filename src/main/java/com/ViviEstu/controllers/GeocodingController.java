@@ -4,6 +4,7 @@ import com.ViviEstu.model.dto.response.CoordenadasDTO;
 import com.ViviEstu.service.GeocodingService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ public class GeocodingController {
     private final GeocodingService geocodingService;
 
     @GetMapping
+    @PreAuthorize("hasRole('PROPIETARIO') or hasRole('ESTUDIANTE') or hasRole('ADMIN')")
     public ResponseEntity<CoordenadasDTO> getCoordinatesFromAddress(@RequestParam String address) {
         CoordenadasDTO coordenadas = geocodingService.getCoordinates(address);
         if (coordenadas != null) {

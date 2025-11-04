@@ -5,13 +5,8 @@ import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.EstudianteMapper;
 import com.ViviEstu.model.dto.request.EstudiantesRequestDTO;
 import com.ViviEstu.model.dto.response.EstudianteResponseDTO;
-import com.ViviEstu.model.entity.Distrito;
-import com.ViviEstu.model.entity.Estudiantes;
-import com.ViviEstu.model.entity.Universidad;
-import com.ViviEstu.repository.DatosUniversitariosRepository;
-import com.ViviEstu.repository.DistritoRepository;
-import com.ViviEstu.repository.EstudiantesRepository;
-import com.ViviEstu.repository.UniversidadRepository;
+import com.ViviEstu.model.entity.*;
+import com.ViviEstu.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +22,8 @@ public class EstudiantesService{
     private final UniversidadRepository universidadRepository;
     private final DatosUniversitariosRepository datosUniversitariosRepository;
     private final EstudianteMapper estudiantesMapper;
-
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Transactional(readOnly = true)
     public List<EstudianteResponseDTO> getAllEstudiantes() {
@@ -38,6 +34,7 @@ public class EstudiantesService{
                     EstudianteResponseDTO dto = estudiantesMapper.convertToDTO(estudiante);
                     dto.setDistrito(estudiante.getDistrito().getNombre());
                     dto.setUniversidad(estudiante.getUniversidad().getNombre());
+                    dto.setCorreo(estudiante.getUser().getCorreo());
                     return dto;
                 })
                 .toList();
@@ -51,7 +48,7 @@ public class EstudiantesService{
         EstudianteResponseDTO responseDTO = estudiantesMapper.convertToDTO(estudiante);
         responseDTO.setDistrito(estudiante.getDistrito().getNombre());
         responseDTO.setUniversidad(estudiante.getUniversidad().getNombre());
-
+        responseDTO.setCorreo(estudiante.getUser().getCorreo());
         return responseDTO;
     }
 
@@ -73,11 +70,20 @@ public class EstudiantesService{
         Universidad universidad = universidadRepository.findById(dto.getUniversidadId())
                 .orElseThrow(() -> new ResourceNotFoundException("Universidad no encontrada"));
 
+        User user = new User();
+        user.setCorreo(dto.getCorreo());
+        user.setContrasenia(dto.getContrasenia());
+
+        Role role = roleRepository.findByName(RoleType.ROLE_ESTUDIANTE)
+                .orElseThrow(() -> new ResourceNotFoundException("Rol ROLE_USER no encontrado"));
+        user.setRole(role);
+        user.setActive(true);
+
+        userRepository.save(user);
+
         Estudiantes estudiante = new Estudiantes();
         estudiante.setNombre(dto.getNombre());
         estudiante.setApellidos(dto.getApellidos());
-        estudiante.setCorreo(dto.getCorreo());
-        estudiante.setContrasenia(dto.getContrasenia());
         estudiante.setTelefono(dto.getTelefono());
         estudiante.setCiclo(dto.getCiclo());
         estudiante.setDni(dto.getDni());
@@ -89,12 +95,12 @@ public class EstudiantesService{
         EstudianteResponseDTO responseDTO = estudiantesMapper.convertToDTO(estudiante);
         responseDTO.setDistrito(estudiante.getDistrito().getNombre());
         responseDTO.setUniversidad(estudiante.getUniversidad().getNombre());
+        responseDTO.setCorreo(user.getCorreo());
 
 
         return responseDTO;
 
     }
-
 
     @Transactional
     public EstudianteResponseDTO updateEstudiante(Long id, EstudiantesRequestDTO estudianteRequestDTO) {
@@ -102,24 +108,32 @@ public class EstudiantesService{
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con id: " + id));
 
         estudiante.setNombre(estudianteRequestDTO.getNombre());
-        estudiante.setCorreo(estudianteRequestDTO.getCorreo());
-        estudiante.setContrasenia(estudianteRequestDTO.getContrasenia());
+        estudiante.setApellidos(estudianteRequestDTO.getNombre());
         estudiante.setDni(estudianteRequestDTO.getDni());
         estudiante.setTelefono(estudianteRequestDTO.getTelefono());
         estudiante.setCarrera(estudianteRequestDTO.getCarrera());
 
+        User user = estudiante.getUser();
+        user.setCorreo(estudianteRequestDTO.getCorreo());
+        user.setContrasenia(estudianteRequestDTO.getContrasenia());
 
+        userRepository.save(user);
         estudiantesRepository.save(estudiante);
 
         EstudianteResponseDTO responseDTO = estudiantesMapper.convertToDTO(estudiante);
         responseDTO.setDistrito(estudiante.getDistrito().getNombre());
         responseDTO.setUniversidad(estudiante.getUniversidad().getNombre());
+        responseDTO.setCorreo(user.getCorreo());
         return responseDTO;
 
     }
 
     @Transactional
     public void deleteEstudiante(Long id) {
+        Estudiantes estudiante = estudiantesRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con id: " + id));
+
+        userRepository.delete(estudiante.getUser());
         estudiantesRepository.deleteById(id);
     }
 }

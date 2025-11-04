@@ -41,7 +41,6 @@ public class SolicitudService {
         return mapper.toDTO(solicitud);
     }
 
-
     public SolicitudResponseDTO registrar(SolicitudRequestDTO request) {
         Estudiantes estudiante = estudiantesRepository.findById(request.getEstudiantesId())
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con ID: " + request.getEstudiantesId()));
@@ -68,7 +67,6 @@ public class SolicitudService {
         return mapper.toDTO(solicitud);
     }
 
-
     public SolicitudResponseDTO actualizar(Long id, SolicitudRequestDTO request) {
         Solicitudes solicitud = solicitudesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + id));
@@ -89,6 +87,29 @@ public class SolicitudService {
         return mapper.toDTO(solicitudesRepository.save(solicitud));
     }
 
+    public List<SolicitudResponseDTO> obtenerPorEstudianteId(Long estudianteId) {
+        List<Solicitudes> solicitudes = solicitudesRepository.findByEstudiantes_Id(estudianteId);
+
+        if (solicitudes.isEmpty()) {
+            throw new ResourceNotFoundException("No se encontraron solicitudes para el estudiante con ID: " + estudianteId);
+        }
+
+        return solicitudes.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<SolicitudResponseDTO> obtenerPorPropietarioId(Long propietarioId) {
+        List<Solicitudes> solicitudes = solicitudesRepository.findByPropietarioId(propietarioId);
+
+        if (solicitudes.isEmpty()) {
+            throw new ResourceNotFoundException("No se encontraron solicitudes para el propietario con ID: " + propietarioId);
+        }
+
+        return solicitudes.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
     public void eliminar(Long id) {
         if (!solicitudesRepository.existsById(id)) {

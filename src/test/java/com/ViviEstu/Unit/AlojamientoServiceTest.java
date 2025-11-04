@@ -269,4 +269,55 @@ public class AlojamientoServiceTest {
         verify(mapper, times(1)).convertToListDTO(Collections.emptyList());
     }
 
+
+    @Test
+    @DisplayName("Error de geolocalización")
+    void testGetAllAlojamientos_ErrorGeolocalizacion() {
+        // Arrange
+        // Alojamiento con coordenadas
+        Alojamiento alojamientoConCoord = new Alojamiento();
+        alojamientoConCoord.setId(1L);
+        alojamientoConCoord.setLatitud(-12.046374);
+        alojamientoConCoord.setLongitud(-77.042793);
+
+        // Alojamiento sin coordenadas (usará el valor por defecto 0.0 para double)
+        Alojamiento alojamientoSinCoord = new Alojamiento();
+        alojamientoSinCoord.setId(2L);
+
+        java.util.List<Alojamiento> listaAlojamientos = java.util.Arrays.asList(alojamientoConCoord, alojamientoSinCoord);
+
+        // DTO correspondiente con coordenadas
+        AlojamientoResponseDTO dtoConCoord = new AlojamientoResponseDTO();
+        dtoConCoord.setId(1L);
+        dtoConCoord.setLatitud(-12.046374);
+        dtoConCoord.setLongitud(-77.042793);
+
+        // DTO correspondiente sin coordenadas (latitud y longitud son null)
+        AlojamientoResponseDTO dtoSinCoord = new AlojamientoResponseDTO();
+        dtoSinCoord.setId(2L);
+        dtoSinCoord.setLatitud(null);
+        dtoSinCoord.setLongitud(null);
+
+        java.util.List<AlojamientoResponseDTO> listaDtos = java.util.Arrays.asList(dtoConCoord, dtoSinCoord);
+
+        // Simular que el repositorio devuelve los alojamientos y el mapper los convierte
+        when(alojamientoRepository.findAll()).thenReturn(listaAlojamientos);
+        when(mapper.convertToListDTO(listaAlojamientos)).thenReturn(listaDtos);
+
+        // Act
+        java.util.List<AlojamientoResponseDTO> resultado = alojamientoService.getAllAlojamientos();
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+        // Verifica que el primer DTO tiene coordenadas
+        assertNotNull(resultado.get(0).getLatitud());
+        assertNotNull(resultado.get(0).getLongitud());
+        // Verifica que el segundo DTO tiene coordenadas nulas (incertidumbre)
+        assertNull(resultado.get(1).getLatitud());
+        assertNull(resultado.get(1).getLongitud());
+
+        verify(alojamientoRepository, times(1)).findAll();
+        verify(mapper, times(1)).convertToListDTO(listaAlojamientos);
+    }
 }

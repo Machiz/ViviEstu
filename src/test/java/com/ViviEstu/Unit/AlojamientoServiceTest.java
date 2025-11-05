@@ -807,4 +807,130 @@ public class AlojamientoServiceTest {
         verify(imagenesRepository, times(1)).delete(imagenAEliminar);
     }
 
+        /* ============================================================
+       🔍 NUEVOS TESTS — US-017: Búsqueda de alojamientos por distrito/universidad
+       ============================================================ */
+
+    @Test
+    @DisplayName("Listar Alojamientos por Distrito - Sin Resultados")
+    void testListarPorDistrito_SinResultados() {
+        // Arrange
+        when(alojamientoRepository.findByDistritoId(1L)).thenReturn(Collections.emptyList());
+
+        // Act & Assert
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> alojamientoService.listarPorDistrito(1L)
+        );
+
+        assertEquals("No se encontraron alojamientos en este distrito. Intenta con otro cercano.",
+                exception.getMessage());
+        verify(alojamientoRepository, times(1)).findByDistritoId(1L);
+    }
+
+    @Test
+    @DisplayName("Listar Alojamientos por Universidad - Sin Resultados")
+    void testListarPorUniversidad_SinResultados() {
+        // Arrange
+        when(alojamientoRepository.findByUniversidadId(1L)).thenReturn(Collections.emptyList());
+
+        // Act & Assert
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> alojamientoService.listarPorUniversidad(1L)
+        );
+
+        assertEquals("No se encontraron alojamientos cercanos a esta universidad.",
+                exception.getMessage());
+        verify(alojamientoRepository, times(1)).findByUniversidadId(1L);
+    }
+
+    /* ============================================================
+       👤 NUEVOS TESTS — US-016: Perfil de propietario personalizable (lectura)
+       ============================================================ */
+
+    @Test
+    @DisplayName("Obtener Datos del Vendedor - Éxito")
+    void testObtenerDatosVendedor_Exito() {
+        // Arrange
+        Propietarios propietario = new Propietarios();
+        propietario.setId(10L);
+        propietario.setNombre("Luis");
+        propietario.setApellidos("Pérez");
+        propietario.setTelefono("987654321");
+        propietario.setDni("87654321");
+        User user = new User();
+        user.setCorreo("luis@example.com");
+        propietario.setUser(user);
+
+        alojamiento.setPropietario(propietario);
+        when(alojamientoRepository.findById(1L)).thenReturn(Optional.of(alojamiento));
+
+        // Act
+        var result = alojamientoService.obtenerDatosVendedor(1L);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Luis", result.getNombre());
+        assertEquals("luis@example.com", result.getCorreo());
+        verify(alojamientoRepository, times(1)).findById(1L);
+    }
+
+    /* ============================================================
+       ⚙️ NUEVO TEST — US-020: Eliminar alojamiento con fallo en Cloudinary
+       ============================================================ */
+    @Test
+    @DisplayName("Eliminar Alojamiento - Error al eliminar imagen de Cloudinary")
+    void testDeleteAlojamiento_ErrorEnCloudinary() throws Exception {
+        // Arrange
+        ImagenesAlojamiento img = new ImagenesAlojamiento();
+        img.setPublicId("public_id_falla");
+        List<ImagenesAlojamiento> imagenes = Collections.singletonList(img);
+
+        when(alojamientoRepository.findById(1L)).thenReturn(Optional.of(alojamiento));
+        when(imagenesRepository.findByAlojamientoId(1L)).thenReturn(imagenes);
+        when(transporteRepository.findByAlojamientoId(1L)).thenReturn(Collections.emptyList());
+        when(uniAlojamientoRepository.findByAlojamientoId(1L)).thenReturn(Collections.emptyList());
+
+        doThrow(new IOException("Error simulado")).when(cloudinaryService).eliminarImagen("public_id_falla");
+
+        // Act
+        alojamientoService.deleteAlojamiento(1L);
+
+        // Assert
+        verify(imagenesRepository, times(1)).deleteAll(imagenes);
+        verify(alojamientoRepository, times(1)).delete(alojamiento);
+    }
+
+    @Test
+    @DisplayName("Crear Alojamiento - Lista de imágenes vacía")
+    void testCrearAlojamiento_ListaImagenesVacia() {
+        // Arrange
+        alojamientoRequestDTO.setImagenes(Collections.emptyList()); // lista vacía, no null
+
+        // Act & Assert
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> alojamientoService.crearAlojamiento(alojamientoRequestDTO));
+
+        assertEquals("Debe subir al menos una imagen para el alojamiento.", exception.getMessage());
+
+        verify(alojamientoRepository, never()).save(any(Alojamiento.class));
+    }
+
+    @Test
+    @DisplayName("Crear Alojamiento - Descripción nula")
+    void testCrearAlojamiento_DescripcionNula() {
+        // Arrange
+        alojamientoRequestDTO.setDescripcion(null);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> alojamientoService.crearAlojamiento(alojamientoRequestDTO));
+
+        assertEquals("La descripción debe tener al menos 50 caracteres.", exception.getMessage());
+
+        // Verificar que no intenta guardar nada
+        verify(alojamientoRepository, never()).save(any(Alojamiento.class));
+    }
+
 }

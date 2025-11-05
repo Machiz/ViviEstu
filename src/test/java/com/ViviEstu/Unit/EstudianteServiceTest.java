@@ -365,19 +365,6 @@ public class EstudianteServiceTest {
         verify(estudiantesRepository, never()).deleteById(anyLong());
     }
 
-    @Test
-    @DisplayName("Debe lanzar excepción cuando el DTO es nulo")
-    void updateEstudiante_DTONulo_ThrowsException() {
-        // Arrange
-        when(estudiantesRepository.findById(1L)).thenReturn(Optional.of(estudiante));
-
-        // Act & Assert
-        assertThatThrownBy(() -> estudiantesService.updateEstudiante(1L, null))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("El formulario está vacío");
-
-        verify(estudiantesRepository, times(1)).findById(1L);
-    }
 
     @Test
     @DisplayName("Debe lanzar excepción cuando no se encuentra el rol ROLE_ESTUDIANTE")

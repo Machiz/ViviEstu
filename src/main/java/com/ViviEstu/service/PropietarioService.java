@@ -3,11 +3,8 @@ package com.ViviEstu.service;
 import com.ViviEstu.exception.DuplicateResourceException;
 import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.PropietariosMapper;
-import com.ViviEstu.model.dto.request.EstudiantesRequestDTO;
 import com.ViviEstu.model.dto.request.PropietariosRequestDTO;
-import com.ViviEstu.model.dto.response.EstudianteResponseDTO;
 import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
-import com.ViviEstu.model.entity.Estudiantes;
 import com.ViviEstu.model.entity.Propietarios;
 import com.ViviEstu.model.entity.User;
 import com.ViviEstu.repository.PropietariosRepository;
@@ -27,6 +24,44 @@ public class PropietarioService {
     private final PropietariosMapper propietariosMapper;
     private final UserRepository userRepository;
 
+
+    // 🔹 US-16: PERFIL DE PROPIETARIO PERSONALIZABLE
+
+    @Transactional
+    public PropietariosResponseDTO updatePropietario(Long id, PropietariosRequestDTO propietariosRequestDTO) {
+        // Validar campos obligatorios
+        if (propietariosRequestDTO.getNombre() == null ||
+                propietariosRequestDTO.getApellidos() == null ||
+                propietariosRequestDTO.getDni() == null ||
+                propietariosRequestDTO.getTelefono() == null ||
+                propietariosRequestDTO.getCorreo() == null ||
+                propietariosRequestDTO.getContrasenia() == null) {
+            throw new IllegalArgumentException("Debe completar todos los campos obligatorios antes de guardar.");
+        }
+
+        // Buscar propietario
+        Propietarios propietario = propietarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Propietario no encontrado con id: " + id));
+
+        // Actualizar datos personales
+        propietario.setNombre(propietariosRequestDTO.getNombre());
+        propietario.setApellidos(propietariosRequestDTO.getApellidos());
+        propietario.setDni(propietariosRequestDTO.getDni());
+        propietario.setTelefono(propietariosRequestDTO.getTelefono());
+
+        // Actualizar datos de usuario
+        User user = propietario.getUser();
+        user.setCorreo(propietariosRequestDTO.getCorreo());
+        user.setContrasenia(propietariosRequestDTO.getContrasenia());
+
+        userRepository.save(user);
+        propietarioRepository.save(propietario);
+
+        PropietariosResponseDTO responseDTO = propietariosMapper.toDTO(propietario);
+        responseDTO.setCorreo(user.getCorreo());
+        return responseDTO;
+    }
+
     @Transactional(readOnly = true)
     public List<PropietariosResponseDTO> findAllPropietarios() {
         return propietarioRepository.findAll()
@@ -44,8 +79,7 @@ public class PropietarioService {
 
     @Transactional
     public PropietariosResponseDTO crearPropietario(PropietariosRequestDTO dto) {
-
-        if (propietarioRepository.existsByNombreAndApellidos(dto.getNombre(), dto.getApellidos())){
+        if (propietarioRepository.existsByNombreAndApellidos(dto.getNombre(), dto.getApellidos())) {
             throw new DuplicateResourceException("Propietario existente");
         }
 
@@ -55,31 +89,7 @@ public class PropietarioService {
     }
 
     @Transactional
-    public PropietariosResponseDTO updatePropietario(Long id, PropietariosRequestDTO propietariosRequestDTO) {
-        Propietarios propietarios = propietarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con id: " + id));
-
-        propietarios.setNombre(propietariosRequestDTO.getNombre());
-        propietarios.setApellidos(propietariosRequestDTO.getNombre());
-        propietarios.setDni(propietariosRequestDTO.getDni());
-        propietarios.setTelefono(propietariosRequestDTO.getTelefono());
-
-        User user = propietarios.getUser();
-        user.setCorreo(propietariosRequestDTO.getCorreo());
-        user.setContrasenia(propietariosRequestDTO.getContrasenia());
-
-        userRepository.save(user);
-        propietarioRepository.save(propietarios);
-
-        PropietariosResponseDTO responseDTO = propietariosMapper.toDTO(propietarios);
-        responseDTO.setCorreo(user.getCorreo());
-        return responseDTO;
-    }
-
-
-    @Transactional
     public void deletePropietario(Long id) {
         propietarioRepository.deleteById(id);
     }
-
 }

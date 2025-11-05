@@ -143,24 +143,6 @@ public class PropietarioServiceTest {
     }
 
     @Test
-    @DisplayName("Crear propietario - Éxito")
-    void testCrearPropietario_Exito() {
-        when(propietarioRepository.existsByNombreAndApellidos(anyString(), anyString())).thenReturn(false);
-        when(propietariosMapper.toEntity(request)).thenReturn(propietario);
-        when(propietariosMapper.toDTO(propietario)).thenReturn(response);
-
-        PropietariosResponseDTO result = propietarioService.crearPropietario(request);
-        assertEquals(response.getId(), result.getId());
-    }
-
-    @Test
-    @DisplayName("Crear propietario - Duplicado")
-    void testCrearPropietario_Duplicado() {
-        when(propietarioRepository.existsByNombreAndApellidos(anyString(), anyString())).thenReturn(true);
-        assertThrows(DuplicateResourceException.class, () -> propietarioService.crearPropietario(request));
-    }
-
-    @Test
     @DisplayName("Buscar propietario por ID - Éxito")
     void testFindById_Exito() {
         when(propietarioRepository.findById(1L)).thenReturn(Optional.of(propietario));

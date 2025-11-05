@@ -27,4 +27,6 @@ public class AlojamientoResponseDTO {
     private List<ImagenResponseDTO> imagenes;
     private List<String> transportes;
     private List<String> universidades;
+    private Double latitud;
+    private Double longitud;
 }

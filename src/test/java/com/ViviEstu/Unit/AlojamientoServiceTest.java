@@ -277,6 +277,118 @@ public class AlojamientoServiceTest {
 
 
     @Test
+    @DisplayName("Carga exitosa del mapa con ofertas")
+    void testGetAllAlojamientos_CargaExitosaParaMapa() {
+        // Arrange
+        Alojamiento alojamiento1 = new Alojamiento();
+        alojamiento1.setId(1L);
+        alojamiento1.setTitulo("Alojamiento 1");
+
+        Alojamiento alojamiento2 = new Alojamiento();
+        alojamiento2.setId(2L);
+        alojamiento2.setTitulo("Alojamiento 2");
+
+        java.util.List<Alojamiento> listaAlojamientos = java.util.Arrays.asList(alojamiento1, alojamiento2);
+
+        AlojamientoResponseDTO dto1 = new AlojamientoResponseDTO();
+        dto1.setId(1L);
+        dto1.setTitulo("Alojamiento 1");
+
+        AlojamientoResponseDTO dto2 = new AlojamientoResponseDTO();
+        dto2.setId(2L);
+        dto2.setTitulo("Alojamiento 2");
+
+        java.util.List<AlojamientoResponseDTO> listaDtos = java.util.Arrays.asList(dto1, dto2);
+
+        when(alojamientoRepository.findAll()).thenReturn(listaAlojamientos);
+        when(mapper.convertToListDTO(listaAlojamientos)).thenReturn(listaDtos);
+
+        // Act
+        java.util.List<AlojamientoResponseDTO> resultado = alojamientoService.getAllAlojamientos();
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+        assertEquals(listaDtos, resultado);
+
+        verify(alojamientoRepository, times(1)).findAll();
+        verify(mapper, times(1)).convertToListDTO(listaAlojamientos);
+    }
+
+    @Test
+    @DisplayName("Navegación a zona sin ofertas")
+    void testGetAllAlojamientos_NavegacionZonaSinOfertas() {
+        // Arrange
+        // Simula que el repositorio no encuentra alojamientos
+        when(alojamientoRepository.findAll()).thenReturn(Collections.emptyList());
+        when(mapper.convertToListDTO(Collections.emptyList())).thenReturn(Collections.emptyList());
+
+        // Act
+        // Intenta obtener todos los alojamientos
+        java.util.List<AlojamientoResponseDTO> resultado = alojamientoService.getAllAlojamientos();
+
+        // Assert
+        // El resultado debe ser una lista vacía, no nula
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+
+        // Verifica que se llamó al repositorio
+        verify(alojamientoRepository, times(1)).findAll();
+        verify(mapper, times(1)).convertToListDTO(Collections.emptyList());
+    }
+
+
+    @Test
+    @DisplayName("Error de geolocalización")
+    void testGetAllAlojamientos_ErrorGeolocalizacion() {
+        // Arrange
+        // Alojamiento con coordenadas
+        Alojamiento alojamientoConCoord = new Alojamiento();
+        alojamientoConCoord.setId(1L);
+        alojamientoConCoord.setLatitud(-12.046374);
+        alojamientoConCoord.setLongitud(-77.042793);
+
+        // Alojamiento sin coordenadas (usará el valor por defecto 0.0 para double)
+        Alojamiento alojamientoSinCoord = new Alojamiento();
+        alojamientoSinCoord.setId(2L);
+
+        java.util.List<Alojamiento> listaAlojamientos = java.util.Arrays.asList(alojamientoConCoord, alojamientoSinCoord);
+
+        // DTO correspondiente con coordenadas
+        AlojamientoResponseDTO dtoConCoord = new AlojamientoResponseDTO();
+        dtoConCoord.setId(1L);
+        dtoConCoord.setLatitud(-12.046374);
+        dtoConCoord.setLongitud(-77.042793);
+
+        // DTO correspondiente sin coordenadas (latitud y longitud son null)
+        AlojamientoResponseDTO dtoSinCoord = new AlojamientoResponseDTO();
+        dtoSinCoord.setId(2L);
+        dtoSinCoord.setLatitud(null);
+        dtoSinCoord.setLongitud(null);
+
+        java.util.List<AlojamientoResponseDTO> listaDtos = java.util.Arrays.asList(dtoConCoord, dtoSinCoord);
+
+        // Simular que el repositorio devuelve los alojamientos y el mapper los convierte
+        when(alojamientoRepository.findAll()).thenReturn(listaAlojamientos);
+        when(mapper.convertToListDTO(listaAlojamientos)).thenReturn(listaDtos);
+
+        // Act
+        java.util.List<AlojamientoResponseDTO> resultado = alojamientoService.getAllAlojamientos();
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+        // Verifica que el primer DTO tiene coordenadas
+        assertNotNull(resultado.get(0).getLatitud());
+        assertNotNull(resultado.get(0).getLongitud());
+        // Verifica que el segundo DTO tiene coordenadas nulas (incertidumbre)
+        assertNull(resultado.get(1).getLatitud());
+        assertNull(resultado.get(1).getLongitud());
+
+        verify(alojamientoRepository, times(1)).findAll();
+        verify(mapper, times(1)).convertToListDTO(listaAlojamientos);
+    }
+
     @DisplayName("Actualizar Alojamiento - No Encontrado")
     void testUpdateAlojamiento_NoEncontrado() {
         // Arrange

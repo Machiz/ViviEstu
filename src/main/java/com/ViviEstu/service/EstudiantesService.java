@@ -1,5 +1,6 @@
 package com.ViviEstu.service;
 
+import com.ViviEstu.exception.BadRequestException;
 import com.ViviEstu.exception.DuplicateResourceException;
 import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.EstudianteMapper;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -106,6 +108,13 @@ public class EstudiantesService{
     public EstudianteResponseDTO updateEstudiante(Long id, EstudiantesRequestDTO estudianteRequestDTO) {
         Estudiantes estudiante = estudiantesRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con id: " + id));
+
+        if (estudianteRequestDTO.getNombre() == null ||
+                estudianteRequestDTO.getApellidos() == null ||
+                estudianteRequestDTO.getCorreo() == null) {
+            throw new BadRequestException("Campos obligatorios vacíos");
+        }
+
 
         estudiante.setNombre(estudianteRequestDTO.getNombre());
         estudiante.setApellidos(estudianteRequestDTO.getNombre());

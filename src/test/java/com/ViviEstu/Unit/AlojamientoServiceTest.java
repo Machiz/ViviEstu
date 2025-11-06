@@ -467,7 +467,7 @@ public class AlojamientoServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener Alojamiento por ID - Encontrado")
+    @DisplayName("Obtener Alojamiento por ID - Encontrado/ US-08 Visualización detallada de oferta ")
     void testGetAlojamientoById_Encontrado() {
         when(alojamientoRepository.findById(1L)).thenReturn(Optional.of(alojamiento));
         when(mapper.convertToDTO(alojamiento)).thenReturn(alojamientoResponseDTO);
@@ -481,7 +481,7 @@ public class AlojamientoServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener Alojamiento por ID - No Encontrado")
+    @DisplayName("Obtener Alojamiento por ID - No Encontrado/ US-08 Visualización detallada de oferta ")
     void testGetAlojamientoById_NoEncontrado() {
         when(alojamientoRepository.findById(1L)).thenReturn(Optional.empty());
 

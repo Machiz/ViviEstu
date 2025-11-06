@@ -538,7 +538,7 @@ public class AlojamientoServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener Alojamiento por ID - Encontrado")
+    @DisplayName("Obtener Alojamiento por ID - Encontrado/ US-08 Visualización detallada de oferta ")
     void testGetAlojamientoById_Encontrado() {
         // Arrange
         when(alojamientoRepository.findById(1L)).thenReturn(Optional.of(alojamiento));
@@ -555,7 +555,7 @@ public class AlojamientoServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener Alojamiento por ID - No Encontrado")
+    @DisplayName("Obtener Alojamiento por ID - No Encontrado/ US-08 Visualización detallada de oferta ")
     void testGetAlojamientoById_NoEncontrado() {
         // Arrange
         when(alojamientoRepository.findById(1L)).thenReturn(Optional.empty());

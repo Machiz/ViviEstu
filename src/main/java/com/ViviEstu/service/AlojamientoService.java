@@ -35,9 +35,7 @@ public class AlojamientoService {
     private final UniAlojamientoRepository uniAlojamientoRepository;
     private final CloudinaryService cloudinaryService;
 
-    /* ============================================================
-       US-017 → Búsqueda de alojamientos por distrito/universidad
-       ============================================================ */
+
     @Transactional(readOnly = true)
     public List<AlojamientoResponseDTO> getAllAlojamientos() {
         return mapper.convertToListDTO(alojamientoRepository.findAll());
@@ -74,9 +72,7 @@ public class AlojamientoService {
                 .toList();
     }
 
-    /* ============================================================
-       US-020 → Reportes, creación y gestión del arrendador
-       ============================================================ */
+
     @Transactional
     public AlojamientoResponseDTO crearAlojamiento(AlojamientoRequestDTO dto) throws IOException {
 
@@ -126,7 +122,6 @@ public class AlojamientoService {
 
         alojamiento = alojamientoRepository.save(alojamiento);
 
-        // Guardar imágenes
         for (MultipartFile imagen : dto.getImagenes()) {
             Map uploadResult = cloudinaryService.subirImagen(imagen);
             ImagenesAlojamiento img = new ImagenesAlojamiento();
@@ -136,7 +131,6 @@ public class AlojamientoService {
             imagenesRepository.save(img);
         }
 
-        // Guardar transportes asociados
         if (dto.getTransportes() != null && !dto.getTransportes().isEmpty()) {
             List<Transporte> transportes = new ArrayList<>();
             for (String nombre : dto.getTransportes()) {
@@ -148,7 +142,6 @@ public class AlojamientoService {
             transporteRepository.saveAll(transportes);
         }
 
-        // Guardar universidades asociadas
         if (dto.getUniversidadesIds() != null && !dto.getUniversidadesIds().isEmpty()) {
             List<UniAlojamiento> relaciones = new ArrayList<>();
             for (Long universidadId : dto.getUniversidadesIds()) {
@@ -217,9 +210,7 @@ public class AlojamientoService {
         return mapper.convertToDTO(alojamientoRepository.save(alojamiento));
     }
 
-    /* ============================================================
-       US-016 → Visualización del perfil del propietario
-       ============================================================ */
+
     @Transactional(readOnly = true)
     public PropietariosResponseDTO obtenerDatosVendedor(Long alojamientoId) {
         Alojamiento alojamiento = alojamientoRepository.findById(alojamientoId)
@@ -241,9 +232,7 @@ public class AlojamientoService {
         return dto;
     }
 
-    /* ============================================================
-       Eliminación total de alojamiento e imágenes
-       ============================================================ */
+
     @Transactional
     public void deleteAlojamiento(Long id) {
         Alojamiento alojamiento = alojamientoRepository.findById(id)
@@ -285,4 +274,21 @@ public class AlojamientoService {
         cloudinaryService.eliminarImagen(imagen.getPublicId());
         imagenesRepository.delete(imagen);
     }
+
+    @Transactional(readOnly = true)
+    public List<AlojamientoResponseDTO> compararAlojamientos(List<Long> ids) {
+        if (ids == null || ids.size() < 2) {
+            throw new IllegalArgumentException("Debe seleccionar al menos dos alojamientos para comparar.");
+        }
+
+        List<Alojamiento> alojamientos = alojamientoRepository.findAllById(ids);
+        if (alojamientos.size() < 2) {
+            throw new ResourceNotFoundException("No se encontraron suficientes alojamientos para comparar.");
+        }
+
+        return alojamientos.stream()
+                .map(mapper::convertToDTO)
+                .toList();
+    }
+
 }

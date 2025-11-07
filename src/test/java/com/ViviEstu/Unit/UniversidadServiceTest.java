@@ -8,6 +8,7 @@ import com.ViviEstu.model.entity.Distrito;
 import com.ViviEstu.model.entity.Universidad;
 import com.ViviEstu.repository.DistritoRepository;
 import com.ViviEstu.repository.UniversidadRepository;
+import com.ViviEstu.service.UniversidadService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

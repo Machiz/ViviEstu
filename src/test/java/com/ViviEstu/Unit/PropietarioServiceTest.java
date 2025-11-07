@@ -70,8 +70,47 @@ public class PropietarioServiceTest {
         response = new PropietariosResponseDTO();
         response.setId(1L);
         response.setNombre("Juan");
+        response.setApellidos("Lopez");
         response.setCorreo("nuevo@mail.com");
     }
+
+    @Test
+    @DisplayName("CrearPropietario - Exitoso")
+    void testCrearPropietario_Exitoso() {
+        // Arrange
+        when(propietarioRepository.existsByNombreAndApellidos("Juan", "Lopez")).thenReturn(false);
+        when(propietariosMapper.toEntity(request)).thenReturn(propietario);
+        when(propietariosMapper.toDTO(propietario)).thenReturn(response);
+
+        // Act
+        PropietariosResponseDTO result = propietarioService.crearPropietario(request);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Juan", result.getNombre());
+        assertEquals("Lopez", result.getApellidos());
+        verify(propietarioRepository).existsByNombreAndApellidos("Juan", "Lopez");
+        verify(propietariosMapper).toEntity(request);
+        verify(propietarioRepository).save(propietario);
+        verify(propietariosMapper).toDTO(propietario);
+    }
+
+    // -------------------------------------------------------------------------
+    @Test
+    @DisplayName("CrearPropietario - Duplicado")
+    void testCrearPropietario_Duplicado() {
+        // Arrange
+        when(propietarioRepository.existsByNombreAndApellidos("Juan", "Lopez")).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(DuplicateResourceException.class,
+                () -> propietarioService.crearPropietario(request));
+
+        verify(propietarioRepository).existsByNombreAndApellidos("Juan", "Lopez");
+        verify(propietarioRepository, never()).save(any(Propietarios.class));
+    }
+
+
 
 
     @Test

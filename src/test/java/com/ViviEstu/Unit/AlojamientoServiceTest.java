@@ -524,7 +524,7 @@ public class AlojamientoServiceTest {
 
     @Test
     @DisplayName("Listar Alojamientos por Universidad")
-    void testListarPorUniversidad() {
+    void testListarPorUniversidad_Exitoso() {
         List<Alojamiento> alojamientos = Collections.singletonList(alojamiento);
         when(alojamientoRepository.findByUniversidadId(1L)).thenReturn(alojamientos);
         when(mapper.convertToDTO(any(Alojamiento.class))).thenReturn(alojamientoResponseDTO);

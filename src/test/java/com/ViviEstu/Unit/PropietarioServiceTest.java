@@ -107,7 +107,7 @@ public class PropietarioServiceTest {
     @Test
     @DisplayName("Actualizar propietario - Falta campo obligatorio (Apellidos nulos)")
     void testUpdatePropietario_FaltaCampoObligatorio_ApellidosNulos() {
-        request.setApellidos(null); // <- el campo que activa la línea 34
+        request.setApellidos(null);
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> propietarioService.updatePropietario(1L, request));

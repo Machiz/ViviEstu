@@ -12,6 +12,7 @@ import com.ViviEstu.security.JwtUtil;
 import com.ViviEstu.service.AuthService;
 import com.ViviEstu.service.EstudiantesService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,10 +47,9 @@ class AuthServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // ---------------------------
-    // registerEstudiante()
-    // ---------------------------
+
     @Test
+    @DisplayName("Usuario registrado exitosamente")
     void testRegisterEstudiante_Success() {
         RegisterEstudianteRequestDTO req = new RegisterEstudianteRequestDTO();
         req.setCorreo("test@correo.com");
@@ -93,6 +93,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Registro de Estudiante-Correo no encontrado")
     void testRegisterEstudiante_CorreoNoEncontrado() {
         RegisterEstudianteRequestDTO req = new RegisterEstudianteRequestDTO();
         req.setCorreo("notfound@uni.com");
@@ -105,6 +106,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Registro de Estudiante-EstudianteDuplicado")
     void testRegisterEstudiante_EstudianteDuplicado() {
         RegisterEstudianteRequestDTO req = new RegisterEstudianteRequestDTO();
         req.setCorreo("a@a.com");
@@ -124,6 +126,7 @@ class AuthServiceTest {
     // registerPropietario()
     // ---------------------------
     @Test
+    @DisplayName("Registro de Propietarios-Exitosamente")
     void testRegisterPropietario_Success() {
         RegisterPropietarioRequestDTO req = new RegisterPropietarioRequestDTO();
         req.setCorreo("prop@correo.com");
@@ -150,10 +153,9 @@ class AuthServiceTest {
         verify(propietariosRepository, times(1)).save(any(Propietarios.class));
     }
 
-    // ---------------------------
-    // login()
-    // ---------------------------
+
     @Test
+    @DisplayName("Login-Admin")
     void testLogin_Admin() {
         LoginRequestDTO req = new LoginRequestDTO("admin@correo.com", "1234");
         User user = new User();
@@ -172,6 +174,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Login Estudiante")
     void testLogin_Estudiante() {
         LoginRequestDTO req = new LoginRequestDTO("est@correo.com", "1234");
         User user = new User();
@@ -196,6 +199,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Login Propietario")
     void testLogin_Propietario() {
         LoginRequestDTO req = new LoginRequestDTO("prop@correo.com", "1234");
         User user = new User();
@@ -220,6 +224,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Login Usuario no Encontrado")
     void testLogin_UserNotFound() {
         LoginRequestDTO req = new LoginRequestDTO("notfound@correo.com", "1234");
         when(userRepository.findByCorreo(req.getCorreo())).thenReturn(Optional.empty());

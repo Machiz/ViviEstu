@@ -491,7 +491,7 @@ public class AlojamientoServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener todos los Alojamientos")
+    @DisplayName("Obtener todos los Alojamientos - US-06 Búsqueda básica de ofertas ")
     void testGetAllAlojamientos() {
         List<Alojamiento> alojamientos = Collections.singletonList(alojamiento);
         when(alojamientoRepository.findAll()).thenReturn(alojamientos);

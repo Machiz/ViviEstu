@@ -507,7 +507,7 @@ public class AlojamientoServiceTest {
     }
 
     @Test
-    @DisplayName("Listar Alojamientos por Distrito")
+    @DisplayName("Listar Alojamientos por Distrito/ US-07 Filtro por Distrito")
     void testListarPorDistrito() {
         List<Alojamiento> alojamientos = Collections.singletonList(alojamiento);
         when(alojamientoRepository.findByDistritoId(1L)).thenReturn(alojamientos);
@@ -523,7 +523,7 @@ public class AlojamientoServiceTest {
     }
 
     @Test
-    @DisplayName("Listar Alojamientos por Universidad")
+    @DisplayName("Listar Alojamientos por Universidad/ US-07 Filtro por Universidad")
     void testListarPorUniversidad() {
         List<Alojamiento> alojamientos = Collections.singletonList(alojamiento);
         when(alojamientoRepository.findByUniversidadId(1L)).thenReturn(alojamientos);

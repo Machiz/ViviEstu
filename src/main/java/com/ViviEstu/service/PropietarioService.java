@@ -1,21 +1,18 @@
 package com.ViviEstu.service;
 
-import com.ViviEstu.exception.BadRequestException;
+import com.ViviEstu.exception.DuplicateResourceException;
 import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.PropietariosMapper;
+import com.ViviEstu.model.dto.request.PropietariosRequestDTO;
 import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
-import com.ViviEstu.model.entity.Alojamiento;
-import com.ViviEstu.model.entity.ImagenesAlojamiento;
 import com.ViviEstu.model.entity.Propietarios;
-import com.ViviEstu.repository.AlojamientoRepository;
-import com.ViviEstu.repository.PropietarioRepository;
+import com.ViviEstu.model.entity.User;
+import com.ViviEstu.repository.PropietariosRepository;
+import com.ViviEstu.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,9 +20,47 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PropietarioService {
 
-    private final PropietarioRepository propietarioRepository;
-    private final AlojamientoRepository alojamientoRepository;
+    private final PropietariosRepository propietarioRepository;
     private final PropietariosMapper propietariosMapper;
+    private final UserRepository userRepository;
+
+
+    // 🔹 US-16: PERFIL DE PROPIETARIO PERSONALIZABLE
+
+    @Transactional
+    public PropietariosResponseDTO updatePropietario(Long id, PropietariosRequestDTO propietariosRequestDTO) {
+        // Validar campos obligatorios
+        if (propietariosRequestDTO.getNombre() == null ||
+                propietariosRequestDTO.getApellidos() == null ||
+                propietariosRequestDTO.getDni() == null ||
+                propietariosRequestDTO.getTelefono() == null ||
+                propietariosRequestDTO.getCorreo() == null ||
+                propietariosRequestDTO.getContrasenia() == null) {
+            throw new IllegalArgumentException("Debe completar todos los campos obligatorios antes de guardar.");
+        }
+
+        // Buscar propietario
+        Propietarios propietario = propietarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Propietario no encontrado con id: " + id));
+
+        // Actualizar datos personales
+        propietario.setNombre(propietariosRequestDTO.getNombre());
+        propietario.setApellidos(propietariosRequestDTO.getApellidos());
+        propietario.setDni(propietariosRequestDTO.getDni());
+        propietario.setTelefono(propietariosRequestDTO.getTelefono());
+
+        // Actualizar datos de usuario
+        User user = propietario.getUser();
+        user.setCorreo(propietariosRequestDTO.getCorreo());
+        user.setContrasenia(propietariosRequestDTO.getContrasenia());
+
+        userRepository.save(user);
+        propietarioRepository.save(propietario);
+
+        PropietariosResponseDTO responseDTO = propietariosMapper.toDTO(propietario);
+        responseDTO.setCorreo(user.getCorreo());
+        return responseDTO;
+    }
 
     @Transactional(readOnly = true)
     public List<PropietariosResponseDTO> findAllPropietarios() {
@@ -43,34 +78,18 @@ public class PropietarioService {
     }
 
     @Transactional
-    public Propietarios crearPropietario(Propietarios propietario) {
-        return propietarioRepository.save(propietario);
+    public PropietariosResponseDTO crearPropietario(PropietariosRequestDTO dto) {
+        if (propietarioRepository.existsByNombreAndApellidos(dto.getNombre(), dto.getApellidos())) {
+            throw new DuplicateResourceException("Propietario existente");
+        }
+
+        Propietarios propietario = propietariosMapper.toEntity(dto);
+        propietarioRepository.save(propietario);
+        return propietariosMapper.toDTO(propietario);
     }
 
     @Transactional
-    public Alojamiento registrarAlojamiento(Long propietarioId, Alojamiento alojamiento, List<ImagenesAlojamiento> imagenes) {
-        Propietarios propietario = propietarioRepository.findById(propietarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Propietario no encontrado"));
-
-        // Validaciones simples
-        if (alojamiento.getTitulo() == null || alojamiento.getTitulo().isEmpty())
-            throw new BadRequestException("El título es obligatorio");
-        if (alojamiento.getPrecioMensual() == null || alojamiento.getPrecioMensual().compareTo(BigDecimal.ZERO) <= 0)
-            throw new BadRequestException("El precio debe ser mayor que 0");
-
-        alojamiento.setPropietario(propietario);
-        alojamiento.setFecha(Timestamp.from(Instant.now()));
-        alojamiento.setAlquilado(false);
-
-        Alojamiento saved = alojamientoRepository.save(alojamiento);
-
-        // Asignar alojamiento a las imágenes
-        if (imagenes != null) {
-            for (ImagenesAlojamiento img : imagenes) {
-                img.setAlojamiento(saved);
-            }
-        }
-
-        return saved;
+    public void deletePropietario(Long id) {
+        propietarioRepository.deleteById(id);
     }
 }

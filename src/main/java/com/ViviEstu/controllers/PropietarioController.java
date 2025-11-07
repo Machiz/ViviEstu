@@ -2,7 +2,9 @@ package com.ViviEstu.controllers;
 
 
 import com.ViviEstu.mapper.PropietariosMapper;
+import com.ViviEstu.model.dto.request.EstudiantesRequestDTO;
 import com.ViviEstu.model.dto.request.PropietariosRequestDTO;
+import com.ViviEstu.model.dto.response.EstudianteResponseDTO;
 import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
 import com.ViviEstu.model.entity.Alojamiento;
 import com.ViviEstu.model.entity.ImagenesAlojamiento;
@@ -10,7 +12,10 @@ import com.ViviEstu.model.entity.Propietarios;
 import com.ViviEstu.service.PropietarioService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,30 +26,42 @@ import java.util.List;
 public class PropietarioController {
 
     private final PropietarioService propietarioService;
-    private final PropietariosMapper propietarioMapper;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<PropietariosResponseDTO>> getAllPropietarios() {
-        return ResponseEntity.ok(propietarioService.findAllPropietarios());
+        List<PropietariosResponseDTO> propietarios = propietarioService.findAllPropietarios();
+        return new ResponseEntity<>(propietarios, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN') or hasRole('PROPIETARIO')")
     public ResponseEntity<PropietariosResponseDTO> getPropietarioById(@PathVariable Long id) {
-        return ResponseEntity.ok(propietarioService.findPropietarioById(id));
+        PropietariosResponseDTO propietario = propietarioService.findPropietarioById(id);
+        return new ResponseEntity<>(propietario, HttpStatus.OK);
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PropietariosResponseDTO> crearPropietario(@Valid @RequestBody PropietariosRequestDTO dto) {
-        Propietarios propietario = propietarioMapper.toEntity(dto);
-        Propietarios saved = propietarioService.crearPropietario(propietario);
-        return ResponseEntity.ok(propietarioMapper.toDTO(saved));
+        PropietariosResponseDTO creado = propietarioService.crearPropietario(dto);
+        return new ResponseEntity<>(creado, HttpStatus.CREATED);
     }
 
-    @PostMapping("/{id}/alojamientos")
-    public ResponseEntity<Alojamiento> registrarAlojamiento(
-            @PathVariable Long id,
-            @RequestBody Alojamiento alojamiento,
-            @RequestBody(required = false) List<ImagenesAlojamiento> imagenes) {
-        return ResponseEntity.ok(propietarioService.registrarAlojamiento(id, alojamiento, imagenes));
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('PROPIETARIO') or hasRole('ADMIN')")
+    public ResponseEntity<PropietariosResponseDTO> updatePropietario(
+            @PathVariable long id,
+            @Validated @RequestBody PropietariosRequestDTO requestDTO) {
+        PropietariosResponseDTO updated = propietarioService.updatePropietario(id, requestDTO);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROPIETARIO')")
+    public ResponseEntity<Void> deletePropietario(@PathVariable long id) {
+        propietarioService.deletePropietario(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

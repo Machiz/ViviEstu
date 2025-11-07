@@ -26,6 +26,7 @@ public class SolicitudMapper {
         dto.setCantInquilinos(entity.getCantInquilinos());
         dto.setMensaje(entity.getMensaje());
         dto.setOferta(entity.getOferta());
+        dto.setEstado(entity.getEstado());
 
         if (entity.getEstudiantes() != null) {
             dto.setEstudiantesId(entity.getEstudiantes().getId());

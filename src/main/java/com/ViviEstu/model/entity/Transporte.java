@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name = "medio_transporte")
+@Table(name = "transporte")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Transporte {
@@ -19,7 +19,8 @@ public class Transporte {
     @Column(nullable = false, length = 50)
     private String nombre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "zonas_id", nullable = false)
-    private Distrito distrito;
+    @ManyToOne
+    @JoinColumn(name = "alojamientos_id", nullable = false)
+    private Alojamiento alojamiento;
+
 }

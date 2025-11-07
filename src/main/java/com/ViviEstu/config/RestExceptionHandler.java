@@ -1,5 +1,6 @@
 package com.ViviEstu.config;
 
+import com.ViviEstu.exception.DuplicateResourceException;
 import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.exception.BadRequestException;
 import lombok.AllArgsConstructor;
@@ -44,7 +45,21 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ProblemDetail handleResourceNotFoundException(ResourceNotFoundException ex){
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,
                 ex.getMessage());
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ProblemDetail handleBadRequest(BadRequestException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ProblemDetail handleDuplicate(DuplicateResourceException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problem.setTitle("Recurso duplicado");
+        problem.setDetail(ex.getMessage());
+        return problem;
     }
 }

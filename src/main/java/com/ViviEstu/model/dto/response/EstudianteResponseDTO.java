@@ -10,11 +10,12 @@ import lombok.NoArgsConstructor;
 public class EstudianteResponseDTO {
     private Long id;
     private String nombre;
+    private String apellidos;
     private String correo;
     private String telefono;
+    private String carrera;
+    private Integer ciclo;
+    private String dni;
     private String distrito;
     private String universidad;
-    private boolean verificado;
-    private String carrera;
-    private String urlPerfil;
 }

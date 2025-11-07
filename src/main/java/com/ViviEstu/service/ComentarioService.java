@@ -1,5 +1,6 @@
 package com.ViviEstu.service;
 
+import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.ComentarioMapper;
 import com.ViviEstu.model.dto.request.ComentarioRequestDTO;
 import com.ViviEstu.model.dto.response.ComentarioResponseDTO;
@@ -28,19 +29,30 @@ public class ComentarioService {
 
     public ComentarioResponseDTO registrar(ComentarioRequestDTO request) {
 
+        if (request.getContenido() == null || request.getContenido().isBlank()) {
+            throw new IllegalArgumentException("El contenido del comentario no puede estar vacío");
+        }
+
+        if (request.getContenido().length() > 500) {
+            throw new IllegalArgumentException("El comentario no puede exceder los 500 caracteres");
+        }
+
+        if (containsContactInfo(request.getContenido())) {
+            throw new IllegalArgumentException("El comentario no puede contener información de contacto.");
+        }
+
         Estudiantes estudiante = estudiantesRepository.findById(request.getEstudianteId())
-                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado con ID: " + request.getEstudianteId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con ID: " + request.getEstudianteId()));
 
         Alojamiento alojamiento = alojamientoRepository.findById(request.getAlojamientoId())
-                .orElseThrow(() -> new RuntimeException("Alojamiento no encontrado con ID: " + request.getAlojamientoId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con ID: " + request.getAlojamientoId()));
 
 
-        Comentario comentario = comentarioMapper.toEntity(request);
-
+        Comentario comentario = new Comentario();
 
         comentario.setEstudiante(estudiante);
         comentario.setAlojamiento(alojamiento);
-
+        comentario.setContenido(request.getContenido());
 
         Comentario guardado = comentarioRepository.save(comentario);
 
@@ -55,5 +67,13 @@ public class ComentarioService {
 
     public void eliminarComentario(Long id) {
         comentarioRepository.deleteById(id);
+    }
+
+    private boolean containsContactInfo(String text) {
+        // Expresión regular para detectar números de teléfono (simplificada)
+        String phoneRegex = ".*\\d{9,}.*";
+        // Expresión regular para detectar direcciones de correo electrónico
+        String emailRegex = ".*[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}.*";
+        return text.matches(phoneRegex) || text.matches(emailRegex);
     }
 }

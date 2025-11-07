@@ -102,4 +102,14 @@ public class AlojamientoController {
         return ResponseEntity.ok("Imagen eliminada correctamente");
     }
 
+    @GetMapping("/buscar-por-area")
+    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
+    public ResponseEntity<List<AlojamientoResponseDTO>> buscarPorArea(
+            @RequestParam double minLat,
+            @RequestParam double maxLat,
+            @RequestParam double minLng,
+            @RequestParam double maxLng) {
+        List<AlojamientoResponseDTO> alojamientos = alojamientoService.buscarPorArea(minLat, maxLat, minLng, maxLng);
+        return ResponseEntity.ok(alojamientos);
+    }
 }

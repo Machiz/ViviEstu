@@ -520,7 +520,7 @@ public class AlojamientoServiceTest {
     }
 
     @Test
-    @DisplayName("Listar Alojamientos por Distrito")
+    @DisplayName("Listar Alojamientos por Distrito/ US-07 Filtro por Distrito")
     void testListarPorDistrito() {
         List<Alojamiento> alojamientos = Collections.singletonList(alojamiento);
         when(alojamientoRepository.findByDistritoId(1L)).thenReturn(alojamientos);
@@ -536,8 +536,8 @@ public class AlojamientoServiceTest {
     }
 
     @Test
-    @DisplayName("Listar Alojamientos por Universidad")
-    void testListarPorUniversidad_Exitoso() {
+    @DisplayName("Listar Alojamientos por Universidad/ US-07 Filtro por Universidad")
+    void testListarPorUniversidad() {
         List<Alojamiento> alojamientos = Collections.singletonList(alojamiento);
         when(alojamientoRepository.findByUniversidadId(1L)).thenReturn(alojamientos);
         when(mapper.convertToDTO(any(Alojamiento.class))).thenReturn(alojamientoResponseDTO);
@@ -861,6 +861,48 @@ public class AlojamientoServiceTest {
         );
         assertEquals("Debe seleccionar al menos dos alojamientos para comparar.", ex.getMessage());
     }
+    @Test
+    @DisplayName("Alojamiento alquilado - exito")
+    void testMarcarComoAlquilado_Exitosamente() {
+        // given
+        Alojamiento alojamiento = new Alojamiento();
+        alojamiento.setId(1L);
+        alojamiento.setAlquilado(false);
 
+        AlojamientoResponseDTO responseDTO = new AlojamientoResponseDTO();
+        responseDTO.setId(1L);
+        responseDTO.setAlquilado(true);
+
+        when(alojamientoRepository.findById(1L)).thenReturn(Optional.of(alojamiento));
+        when(alojamientoRepository.save(any(Alojamiento.class))).thenAnswer(i -> i.getArgument(0));
+        when(mapper.convertToDTO(any(Alojamiento.class))).thenReturn(responseDTO);
+
+        AlojamientoResponseDTO resultado = alojamientoService.marcarComoAlquilado(1L);
+
+        assertNotNull(resultado);
+        assertTrue(resultado.getAlquilado());
+        verify(alojamientoRepository).save(alojamiento);
+    }
+    @Test
+    @DisplayName("Alojamiento alquilado - marcado por error")
+    void testReactivarAlojamiento_MarcadoPorError_Exitosamente() {
+        Alojamiento alojamiento = new Alojamiento();
+        alojamiento.setId(2L);
+        alojamiento.setAlquilado(true);
+
+        AlojamientoResponseDTO responseDTO = new AlojamientoResponseDTO();
+        responseDTO.setId(2L);
+        responseDTO.setAlquilado(false);
+
+        when(alojamientoRepository.findById(2L)).thenReturn(Optional.of(alojamiento));
+        when(alojamientoRepository.save(any(Alojamiento.class))).thenAnswer(i -> i.getArgument(0));
+        when(mapper.convertToDTO(any(Alojamiento.class))).thenReturn(responseDTO);
+
+        AlojamientoResponseDTO resultado = alojamientoService.marcarComoDisponible(2L);
+
+        assertNotNull(resultado);
+        assertFalse(resultado.getAlquilado());
+        verify(alojamientoRepository).save(alojamiento);
+    }
 
 }

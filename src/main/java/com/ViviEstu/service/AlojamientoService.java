@@ -215,6 +215,13 @@ public class AlojamientoService {
         return mapper.convertToDTO(alojamientoRepository.save(alojamiento));
     }
 
+    @Transactional
+    public AlojamientoResponseDTO marcarComoDisponible(Long id) {
+        Alojamiento alojamiento = alojamientoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Alojamiento no encontrado con id: " + id));
+        alojamiento.setAlquilado(false);
+        return mapper.convertToDTO(alojamientoRepository.save(alojamiento));
+    }
 
     @Transactional(readOnly = true)
     public PropietariosResponseDTO obtenerDatosVendedor(Long alojamientoId) {

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -305,5 +306,64 @@ class SolicitudServiceTest {
         assertThatThrownBy(() -> solicitudService.eliminar(100L))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Solicitud no encontrada");
+    }
+    @Test
+    @DisplayName("Actualizar estado de solicitud - Escenario feliz: Aceptar solicitud exitosamente")
+    void testActualizarEstado_AceptarSolicitud_Exitosamente() {
+        Solicitudes solicitud = new Solicitudes();
+        solicitud.setId(1L);
+        solicitud.setEstado("pendiente");
+
+        SolicitudResponseDTO dto = new SolicitudResponseDTO();
+        dto.setId(1L);
+        dto.setEstado("aceptada");
+
+        when(solicitudRepository.findById(1L)).thenReturn(Optional.of(solicitud));
+        when(solicitudRepository.save(any(Solicitudes.class))).thenAnswer(i -> i.getArgument(0));
+        when(mapper.toDTO(any(Solicitudes.class))).thenReturn(dto);
+
+        SolicitudResponseDTO resultado = solicitudService.actualizarEstado(1L, "aceptada");
+
+        assertNotNull(resultado);
+        assertEquals("aceptada", resultado.getEstado());
+        verify(solicitudRepository).save(solicitud);
+    }
+
+    // 🟢 Escenario exitoso 2: Solicitud rechazada exitosamente
+    @Test
+    @DisplayName("Actualizar estado de solicitud - Escenario feliz: Rechazar solicitud exitosamente")
+    void testActualizarEstado_RechazarSolicitud_Exitosamente() {
+        Solicitudes solicitud = new Solicitudes();
+        solicitud.setId(2L);
+        solicitud.setEstado("pendiente");
+
+        SolicitudResponseDTO dto = new SolicitudResponseDTO();
+        dto.setId(2L);
+        dto.setEstado("rechazada");
+
+        when(solicitudRepository.findById(2L)).thenReturn(Optional.of(solicitud));
+        when(solicitudRepository.save(any(Solicitudes.class))).thenAnswer(i -> i.getArgument(0));
+        when(mapper.toDTO(any(Solicitudes.class))).thenReturn(dto);
+
+        SolicitudResponseDTO resultado = solicitudService.actualizarEstado(2L, "rechazada");
+
+        assertNotNull(resultado);
+        assertEquals("rechazada", resultado.getEstado());
+        verify(solicitudRepository).save(solicitud);
+    }
+
+    // ⚠️ Escenario alternativo 1: Sin solicitudes recibidas (simulado al buscar una inexistente)
+    @Test
+    @DisplayName("Actualizar estado de solicitud - Escenario alternativo: Solicitud no encontrada")
+    void testActualizarEstado_SolicitudNoEncontrada_LanzaExcepcion() {
+        when(solicitudRepository.findById(99L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException ex = assertThrows(
+                ResourceNotFoundException.class,
+                () -> solicitudService.actualizarEstado(99L, "aceptada")
+        );
+
+        assertEquals("Solicitud no encontrada con id: 99", ex.getMessage());
+        verify(solicitudRepository, never()).save(any());
     }
 }

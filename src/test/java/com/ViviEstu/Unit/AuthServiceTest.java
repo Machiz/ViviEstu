@@ -231,4 +231,49 @@ class AuthServiceTest {
 
         assertThrows(UsernameNotFoundException.class, () -> authService.login(req));
     }
+    @Test
+    @DisplayName("Verificación Universitaria-Exitoso")
+    void testVerificacionUniversitaria_Exitoso() {
+        // Arrange
+        String correo = "carlos@upc.edu.pe";
+
+        // simulamos que el correo SÍ existe en la base de datos universitaria
+        when(datosUniversitariosRepository.existsByCorreoInstitucional(correo))
+                .thenReturn(true);
+
+        // Act
+        boolean resultado = datosUniversitariosRepository.existsByCorreoInstitucional(correo);
+
+        // Assert
+        assertTrue(resultado);
+        verify(datosUniversitariosRepository).existsByCorreoInstitucional(correo);
+    }
+
+    @Test
+    @DisplayName("Verificación Universitaria-Dominio no Registrado")
+    void testVerificarCorreoInstitucional_DominioNoRegistrado() {
+        String correo = "juan@noexiste.com";
+
+        when(datosUniversitariosRepository.existsByCorreoInstitucional("noexiste.com")).thenReturn(false);
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> authService.verificarCorreoInstitucional(correo));
+
+        assertEquals("El dominio del correo no pertenece a ninguna universidad registrada.", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Verificación Universitaria-Correo ya Registrado")
+    void testVerificarCorreoInstitucional_CorreoYaRegistrado() {
+        String correo = "juan@upc.edu.pe";
+
+        when(datosUniversitariosRepository.existsByCorreoInstitucional("upc.edu.pe")).thenReturn(true);
+        when(datosUniversitariosRepository.existsByCorreoInstitucional(correo)).thenReturn(true);
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> authService.verificarCorreoInstitucional(correo));
+
+        assertEquals("Este correo institucional ya está verificado por otro estudiante.", ex.getMessage());
+    }
+
 }

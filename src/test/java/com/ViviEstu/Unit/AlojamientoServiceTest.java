@@ -6,10 +6,12 @@ import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.AlojamientoMapper;
 import com.ViviEstu.model.dto.request.AlojamientoRequestDTO;
 import com.ViviEstu.model.dto.response.AlojamientoResponseDTO;
+import com.ViviEstu.model.dto.response.CoordenadasDTO;
 import com.ViviEstu.model.entity.*;
 import com.ViviEstu.repository.*;
 import com.ViviEstu.service.AlojamientoService;
 import com.ViviEstu.service.CloudinaryService;
+import com.ViviEstu.service.GeocodingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,8 +60,14 @@ public class AlojamientoServiceTest {
     @Mock
     private CloudinaryService cloudinaryService;
 
+    @Mock
+    private GeocodingService geocodingService;
+
+    private CoordenadasDTO coordenadasDTO;
+
     @InjectMocks
     private AlojamientoService alojamientoService;
+
 
     private AlojamientoRequestDTO alojamientoRequestDTO;
     private Propietarios propietario;
@@ -97,6 +105,10 @@ public class AlojamientoServiceTest {
         alojamientoResponseDTO = new AlojamientoResponseDTO();
         alojamientoResponseDTO.setId(1L);
         alojamientoResponseDTO.setTitulo("Título de prueba");
+
+        coordenadasDTO = new CoordenadasDTO();
+        coordenadasDTO.setLatitude(-12.046374);
+        coordenadasDTO.setLongitude(-77.042793);
     }
 
     @Test
@@ -107,6 +119,7 @@ public class AlojamientoServiceTest {
         when(propietariosRepository.findById(anyLong())).thenReturn(Optional.of(propietario));
         when(datosPropiedadesRepository.existsByDniPropietarioAndNroPartida(anyString(), anyString())).thenReturn(true);
         when(alojamientoRepository.save(any(Alojamiento.class))).thenReturn(alojamiento);
+        when(geocodingService.getCoordinates(anyString())).thenReturn(coordenadasDTO);
 
         Map<String, String> uploadResult = new HashMap<>();
         uploadResult.put("secure_url", "http://example.com/image.jpg");
@@ -215,7 +228,7 @@ public class AlojamientoServiceTest {
         try {
             verify(cloudinaryService, never()).subirImagen(any());
         } catch (IOException e) {
-
+            // Test-related catch block, can be ignored
         }
     }
 
@@ -491,7 +504,7 @@ public class AlojamientoServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener todos los Alojamientos")
+    @DisplayName("Obtener todos los Alojamientos - US-06 Búsqueda básica de ofertas ")
     void testGetAllAlojamientos() {
         List<Alojamiento> alojamientos = Collections.singletonList(alojamiento);
         when(alojamientoRepository.findAll()).thenReturn(alojamientos);
@@ -557,7 +570,7 @@ public class AlojamientoServiceTest {
 
     @Test
     @DisplayName("Eliminar Alojamiento - Éxito")
-    void testDeleteAlojamiento_Exito() throws Exception {
+    void testDeleteAlojamiento_Exito() throws IOException {
         ImagenesAlojamiento imagen = new ImagenesAlojamiento();
         imagen.setPublicId("public_id_test");
         List<ImagenesAlojamiento> imagenes = Collections.singletonList(imagen);
@@ -590,6 +603,7 @@ public class AlojamientoServiceTest {
         when(alojamientoRepository.countByPropietarioIdAndAlquiladoIsFalse(anyLong())).thenReturn(0L);
         when(alojamientoRepository.save(any(Alojamiento.class))).thenReturn(alojamiento);
         when(universidadRepository.findById(1L)).thenReturn(Optional.of(new Universidad()));
+        when(geocodingService.getCoordinates(anyString())).thenReturn(coordenadasDTO);
 
         Map<String, String> uploadResult = new HashMap<>();
         uploadResult.put("secure_url", "http://example.com/image.jpg");
@@ -615,6 +629,7 @@ public class AlojamientoServiceTest {
         when(datosPropiedadesRepository.existsByDniPropietarioAndNroPartida(anyString(), anyString())).thenReturn(true);
         when(alojamientoRepository.save(any(Alojamiento.class))).thenReturn(alojamiento);
         when(universidadRepository.findById(99L)).thenReturn(Optional.empty());
+        when(geocodingService.getCoordinates(anyString())).thenReturn(coordenadasDTO);
 
         Map<String, String> uploadResult = new HashMap<>();
         uploadResult.put("secure_url", "http://example.com/image.jpg");
@@ -660,7 +675,7 @@ public class AlojamientoServiceTest {
 
     @Test
     @DisplayName("Eliminar Alojamiento - Éxito con Transportes y Universidades")
-    void testDeleteAlojamiento_ExitoConRelaciones() throws Exception {
+    void testDeleteAlojamiento_ExitoConRelaciones() throws IOException {
         List<ImagenesAlojamiento> imagenes = List.of(new ImagenesAlojamiento());
         List<Transporte> transportes = List.of(new Transporte());
         List<UniAlojamiento> relaciones = List.of(new UniAlojamiento());
@@ -831,7 +846,7 @@ public class AlojamientoServiceTest {
     @DisplayName("Comparar Alojamientos - No encontrados")
     void testCompararAlojamientos_NoEncontrados() {
         when(alojamientoRepository.findAllById(List.of(1L, 2L)))
-                .thenReturn(List.of(new Alojamiento()));
+                .thenReturn(Collections.emptyList());
 
         assertThrows(ResourceNotFoundException.class,
                 () -> alojamientoService.compararAlojamientos(List.of(1L, 2L)));

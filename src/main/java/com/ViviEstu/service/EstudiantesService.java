@@ -117,7 +117,7 @@ public class EstudiantesService{
 
 
         estudiante.setNombre(estudianteRequestDTO.getNombre());
-        estudiante.setApellidos(estudianteRequestDTO.getNombre());
+        estudiante.setApellidos(estudianteRequestDTO.getApellidos());
         estudiante.setDni(estudianteRequestDTO.getDni());
         estudiante.setTelefono(estudianteRequestDTO.getTelefono());
         estudiante.setCarrera(estudianteRequestDTO.getCarrera());

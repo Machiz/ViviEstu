@@ -178,5 +178,27 @@ public class AuthService {
         // 4. Si llega acá, el rol no está reconocido
         throw new RuntimeException("Rol no reconocido: " + role);
     }
+    @Transactional
+    public boolean verificarCorreoInstitucional(String correoInstitucional) {
+        if (correoInstitucional == null || !correoInstitucional.contains("@")) {
+            throw new IllegalArgumentException("Correo institucional inválido");
+        }
+
+        String dominio = correoInstitucional.substring(correoInstitucional.indexOf("@") + 1);
+
+        if (!datosUniversitariosRepository.existsByCorreoInstitucional(dominio)) {
+            throw new RuntimeException("El dominio del correo no pertenece a ninguna universidad registrada.");
+        }
+
+        if (datosUniversitariosRepository.existsByCorreoInstitucional(correoInstitucional)) {
+            throw new RuntimeException("Este correo institucional ya está verificado por otro estudiante.");
+        }
+
+        if (!datosUniversitariosRepository.existsByCorreoInstitucional(correoInstitucional)) {
+            throw new RuntimeException("El correo institucional no figura en la base de datos universitaria.");
+        }
+
+        return true;
+    }
 
 }

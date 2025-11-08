@@ -5,6 +5,7 @@ import com.ViviEstu.exception.ResourceNotFoundException;
 import com.ViviEstu.mapper.AlojamientoMapper;
 import com.ViviEstu.model.dto.request.AlojamientoRequestDTO;
 import com.ViviEstu.model.dto.response.AlojamientoResponseDTO;
+import com.ViviEstu.model.dto.response.CoordenadasDTO;
 import com.ViviEstu.model.dto.response.PropietariosResponseDTO;
 import com.ViviEstu.model.entity.*;
 import com.ViviEstu.repository.*;
@@ -119,6 +120,10 @@ public class AlojamientoService {
         alojamiento.setNroPartida(dto.getNroPartida());
         alojamiento.setDistrito(distrito);
         alojamiento.setPropietario(propietario);
+
+        CoordenadasDTO coordenadas= geocodingService.getCoordinates(dto.getDireccion());
+        alojamiento.setLatitud(coordenadas.getLatitude());
+        alojamiento.setLongitud(coordenadas.getLongitude());
 
         alojamiento = alojamientoRepository.save(alojamiento);
 
@@ -291,6 +296,19 @@ public class AlojamientoService {
         List<Alojamiento> alojamientos = alojamientoRepository.findAllById(ids);
         if (alojamientos.size() < 2) {
             throw new ResourceNotFoundException("No se encontraron suficientes alojamientos para comparar.");
+        }
+
+        return alojamientos.stream()
+                .map(mapper::convertToDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<AlojamientoResponseDTO> buscarPorArea(double minLat, double maxLat, double minLng, double maxLng) {
+        List<Alojamiento> alojamientos = alojamientoRepository.findByBounds(minLat, maxLat, minLng, maxLng);
+
+        if (alojamientos.isEmpty()) {
+            throw new ResourceNotFoundException("No se encontraron alojamientos en el área de búsqueda especificada.");
         }
 
         return alojamientos.stream()

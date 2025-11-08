@@ -56,7 +56,7 @@ public class AlojamientoController {
     public ResponseEntity<AlojamientoResponseDTO> marcarComoAlquilado(@PathVariable Long id) {
         return ResponseEntity.ok(alojamientoService.marcarComoAlquilado(id));
     }
-    @PutMapping("/{id}/alquilar")
+    @PutMapping("/{id}/liberar")
     @PreAuthorize("hasRole('PROPIETARIO') or hasRole('ADMIN')")
     public ResponseEntity<AlojamientoResponseDTO> marcarComoDisponible(@PathVariable Long id) {
         return ResponseEntity.ok(alojamientoService.marcarComoDisponible(id));

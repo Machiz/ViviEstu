@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Angular ###
+viviestu-frontend/node_modules/
+viviestu-frontend/dist/
+viviestu-frontend/.angular/

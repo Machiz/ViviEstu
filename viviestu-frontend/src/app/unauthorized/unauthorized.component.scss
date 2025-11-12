@@ -1,0 +1,30 @@
+.unauthorized-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.unauthorized-card {
+  background: white;
+  border-radius: 10px;
+  padding: 60px 40px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+
+  h1 {
+    color: #e74c3c;
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
+
+  p {
+    color: #666;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+  }
+}

@@ -1,1 +1,124 @@
-<p>register-landlord works!</p>
+<div class="register-container">
+  <div class="register-card">
+    <h1>Registro de Propietario</h1>
+    <p class="subtitle">Publica tus alojamientos en ViviEstu</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nombre">Nombre *</label>
+          <input 
+            type="text" 
+            id="nombre" 
+            formControlName="nombre" 
+            placeholder="Nombre"
+            [class.error]="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched">
+          <div class="error-message" *ngIf="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched">
+            <span *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+            <span *ngIf="registerForm.get('nombre')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="apellido">Apellido *</label>
+          <input 
+            type="text" 
+            id="apellido" 
+            formControlName="apellido" 
+            placeholder="Apellido"
+            [class.error]="registerForm.get('apellido')?.invalid && registerForm.get('apellido')?.touched">
+          <div class="error-message" *ngIf="registerForm.get('apellido')?.invalid && registerForm.get('apellido')?.touched">
+            <span *ngIf="registerForm.get('apellido')?.errors?.['required']">El apellido es obligatorio</span>
+            <span *ngIf="registerForm.get('apellido')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="correo">Correo Electrónico *</label>
+        <input 
+          type="email" 
+          id="correo" 
+          formControlName="correo" 
+          placeholder="correo@ejemplo.com"
+          [class.error]="registerForm.get('correo')?.invalid && registerForm.get('correo')?.touched">
+        <div class="error-message" *ngIf="registerForm.get('correo')?.invalid && registerForm.get('correo')?.touched">
+          <span *ngIf="registerForm.get('correo')?.errors?.['required']">El correo es obligatorio</span>
+          <span *ngIf="registerForm.get('correo')?.errors?.['email']">Ingrese un correo válido</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="telefono">Teléfono</label>
+          <input 
+            type="tel" 
+            id="telefono" 
+            formControlName="telefono" 
+            placeholder="999999999"
+            [class.error]="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched">
+          <div class="error-message" *ngIf="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched">
+            <span *ngIf="registerForm.get('telefono')?.errors?.['pattern']">Ingrese un teléfono válido (9 dígitos)</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="dni">DNI *</label>
+          <input 
+            type="text" 
+            id="dni" 
+            formControlName="dni" 
+            placeholder="12345678"
+            [class.error]="registerForm.get('dni')?.invalid && registerForm.get('dni')?.touched">
+          <div class="error-message" *ngIf="registerForm.get('dni')?.invalid && registerForm.get('dni')?.touched">
+            <span *ngIf="registerForm.get('dni')?.errors?.['required']">El DNI es obligatorio</span>
+            <span *ngIf="registerForm.get('dni')?.errors?.['pattern']">DNI debe tener 8 dígitos</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contrasenia">Contraseña *</label>
+        <input 
+          type="password" 
+          id="contrasenia" 
+          formControlName="contrasenia" 
+          placeholder="Mínimo 8 caracteres"
+          [class.error]="registerForm.get('contrasenia')?.invalid && registerForm.get('contrasenia')?.touched">
+        <div class="error-message" *ngIf="registerForm.get('contrasenia')?.invalid && registerForm.get('contrasenia')?.touched">
+          <span *ngIf="registerForm.get('contrasenia')?.errors?.['required']">La contraseña es obligatoria</span>
+          <span *ngIf="registerForm.get('contrasenia')?.errors?.['minlength']">Mínimo 8 caracteres</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmarContrasenia">Confirmar Contraseña *</label>
+        <input 
+          type="password" 
+          id="confirmarContrasenia" 
+          formControlName="confirmarContrasenia" 
+          placeholder="Confirme su contraseña"
+          [class.error]="registerForm.get('confirmarContrasenia')?.invalid && registerForm.get('confirmarContrasenia')?.touched">
+        <div class="error-message" *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmarContrasenia')?.touched">
+          Las contraseñas no coinciden
+        </div>
+      </div>
+
+      <div class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" [disabled]="registerForm.invalid || loading" class="btn-primary">
+        {{ loading ? 'Registrando...' : 'Registrarse' }}
+      </button>
+    </form>
+
+    <div class="login-link">
+      <p>¿Ya tienes cuenta? <a routerLink="/auth/login">Iniciar sesión</a></p>
+    </div>
+  </div>
+</div>

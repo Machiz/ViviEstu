@@ -1,1 +1,45 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Panel de Propietario - {{ userName }}</h1>
+    <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>{{ accommodationsCount }}</h3>
+      <p>Alojamientos Publicados</p>
+      <a routerLink="/landlord/accommodations" class="stat-link">Ver todos →</a>
+    </div>
+    <div class="stat-card">
+      <h3>{{ applicationsCount }}</h3>
+      <p>Solicitudes Recibidas</p>
+      <a routerLink="/landlord/applications" class="stat-link">Ver todas →</a>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <h2>Acciones Rápidas</h2>
+    <div class="actions-grid">
+      <a routerLink="/landlord/accommodations/create" class="action-card">
+        <span class="icon">➕</span>
+        <h3>Publicar Alojamiento</h3>
+        <p>Agrega un nuevo alojamiento</p>
+      </a>
+      <a routerLink="/landlord/accommodations" class="action-card">
+        <span class="icon">🏠</span>
+        <h3>Mis Alojamientos</h3>
+        <p>Gestiona tus publicaciones</p>
+      </a>
+      <a routerLink="/landlord/applications" class="action-card">
+        <span class="icon">📋</span>
+        <h3>Solicitudes</h3>
+        <p>Revisa las aplicaciones</p>
+      </a>
+      <a routerLink="/landlord/statistics" class="action-card">
+        <span class="icon">📊</span>
+        <h3>Estadísticas</h3>
+        <p>Ve el rendimiento</p>
+      </a>
+    </div>
+  </div>
+</div>

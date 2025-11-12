@@ -1,1 +1,84 @@
-<p>search-accommodations works!</p>
+<div class="search-container">
+  <div class="search-header">
+    <h1>Buscar Alojamiento</h1>
+  </div>
+
+  <div class="filters-section">
+    <h2>Filtros</h2>
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label for="distrito">Distrito</label>
+        <select id="distrito" [(ngModel)]="selectedDistrito" (change)="applyFilters()">
+          <option value="">Todos los distritos</option>
+          <option *ngFor="let distrito of distritos" [value]="distrito.nombre">{{ distrito.nombre }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="universidad">Universidad</label>
+        <select id="universidad" [(ngModel)]="selectedUniversidad" (change)="applyFilters()">
+          <option value="">Todas las universidades</option>
+          <option *ngFor="let uni of universidades" [value]="uni.nombre">{{ uni.nombre }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="precioMin">Precio Mínimo (S/.)</label>
+        <input type="number" id="precioMin" [(ngModel)]="precioMin" (change)="applyFilters()" min="0">
+      </div>
+
+      <div class="filter-group">
+        <label for="precioMax">Precio Máximo (S/.)</label>
+        <input type="number" id="precioMax" [(ngModel)]="precioMax" (change)="applyFilters()" min="0">
+      </div>
+
+      <div class="filter-group checkbox-group">
+        <label>
+          <input type="checkbox" [(ngModel)]="soloDisponibles" (change)="applyFilters()">
+          Solo disponibles
+        </label>
+      </div>
+
+      <div class="filter-group">
+        <button (click)="resetFilters()" class="btn-secondary">Limpiar filtros</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-section">
+    <h2>Resultados ({{ filteredAlojamientos.length }})</h2>
+    
+    <div *ngIf="loading" class="loading">
+      Cargando alojamientos...
+    </div>
+
+    <div *ngIf="!loading && filteredAlojamientos.length === 0" class="no-results">
+      No se encontraron alojamientos con los filtros seleccionados.
+    </div>
+
+    <div class="accommodations-grid">
+      <div *ngFor="let aloj of filteredAlojamientos" class="accommodation-card">
+        <div class="card-image">
+          <img [src]="aloj.imagenes && aloj.imagenes.length > 0 ? aloj.imagenes[0].url : 'assets/placeholder.jpg'" [alt]="aloj.titulo">
+          <span class="status-badge" [class.disponible]="!aloj.alquilado" [class.alquilado]="aloj.alquilado">
+            {{ aloj.alquilado ? 'Alquilado' : 'Disponible' }}
+          </span>
+        </div>
+        <div class="card-content">
+          <h3>{{ aloj.titulo }}</h3>
+          <p class="distrito">📍 {{ aloj.distrito }}</p>
+          <p class="descripcion">{{ aloj.descripcion | slice:0:100 }}...</p>
+          <div class="card-footer">
+            <span class="precio">S/. {{ aloj.precioMensual }}</span>
+            <div class="card-actions">
+              <button (click)="viewDetails(aloj.id)" class="btn-view">Ver Detalles</button>
+              <button (click)="addToFavorites(aloj.id)" class="btn-favorite" title="Agregar a favoritos">
+                ♡
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

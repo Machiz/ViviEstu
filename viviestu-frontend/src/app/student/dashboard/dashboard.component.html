@@ -1,1 +1,62 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>¡Bienvenido, {{ userName }}!</h1>
+    <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>{{ favoritesCount }}</h3>
+      <p>Favoritos</p>
+      <a routerLink="/student/favorites" class="stat-link">Ver todos →</a>
+    </div>
+    <div class="stat-card">
+      <h3>{{ applicationsCount }}</h3>
+      <p>Solicitudes</p>
+      <a routerLink="/student/applications" class="stat-link">Ver todas →</a>
+    </div>
+    <div class="stat-card">
+      <h3>{{ recentAccommodations.length }}</h3>
+      <p>Alojamientos Disponibles</p>
+      <a routerLink="/student/search" class="stat-link">Buscar →</a>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <h2>Acciones Rápidas</h2>
+    <div class="actions-grid">
+      <a routerLink="/student/search" class="action-card">
+        <span class="icon">🔍</span>
+        <h3>Buscar Alojamiento</h3>
+        <p>Encuentra tu hogar ideal</p>
+      </a>
+      <a routerLink="/student/favorites" class="action-card">
+        <span class="icon">❤️</span>
+        <h3>Mis Favoritos</h3>
+        <p>Revisa tus alojamientos guardados</p>
+      </a>
+      <a routerLink="/student/applications" class="action-card">
+        <span class="icon">📝</span>
+        <h3>Mis Solicitudes</h3>
+        <p>Gestiona tus aplicaciones</p>
+      </a>
+      <a routerLink="/student/profile" class="action-card">
+        <span class="icon">👤</span>
+        <h3>Mi Perfil</h3>
+        <p>Actualiza tu información</p>
+      </a>
+    </div>
+  </div>
+
+  <div class="recent-section" *ngIf="!loading && recentAccommodations.length > 0">
+    <h2>Alojamientos Recientes</h2>
+    <div class="accommodations-grid">
+      <div *ngFor="let aloj of recentAccommodations" class="accommodation-card">
+        <h4>{{ aloj.titulo }}</h4>
+        <p class="distrito">📍 {{ aloj.distrito }}</p>
+        <p class="precio">S/. {{ aloj.precioMensual }}/mes</p>
+        <a [routerLink]="['/student/accommodation', aloj.id]" class="btn-view">Ver Detalles</a>
+      </div>
+    </div>
+  </div>
+</div>

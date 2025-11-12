@@ -1,1 +1,81 @@
-<p>accommodation-detail works!</p>
+<div class="detail-container" *ngIf="!loading && alojamiento">
+  <div class="detail-header">
+    <h1>{{ alojamiento.titulo }}</h1>
+    <span class="status-badge" [class.disponible]="!alojamiento.alquilado" [class.alquilado]="alojamiento.alquilado">
+      {{ alojamiento.alquilado ? 'Alquilado' : 'Disponible' }}
+    </span>
+  </div>
+
+  <div class="image-gallery" *ngIf="alojamiento.imagenes && alojamiento.imagenes.length > 0">
+    <button class="nav-btn prev" (click)="previousImage()" *ngIf="alojamiento.imagenes.length > 1">‹</button>
+    <img [src]="alojamiento.imagenes[currentImageIndex].url" [alt]="alojamiento.titulo">
+    <button class="nav-btn next" (click)="nextImage()" *ngIf="alojamiento.imagenes.length > 1">›</button>
+    <div class="image-counter" *ngIf="alojamiento.imagenes.length > 1">
+      {{ currentImageIndex + 1 }} / {{ alojamiento.imagenes.length }}
+    </div>
+  </div>
+
+  <div class="detail-content">
+    <div class="main-info">
+      <div class="info-section">
+        <h2>Información General</h2>
+        <p class="precio">S/. {{ alojamiento.precioMensual }} / mes</p>
+        <p class="ubicacion">📍 {{ alojamiento.direccion }}, {{ alojamiento.distrito }}</p>
+        <p class="propietario">👤 Propietario: {{ alojamiento.propietario }}</p>
+      </div>
+
+      <div class="info-section">
+        <h2>Descripción</h2>
+        <p>{{ alojamiento.descripcion }}</p>
+      </div>
+
+      <div class="info-section" *ngIf="alojamiento.universidades && alojamiento.universidades.length > 0">
+        <h2>Universidades Cercanas</h2>
+        <ul>
+          <li *ngFor="let uni of alojamiento.universidades">🎓 {{ uni }}</li>
+        </ul>
+      </div>
+
+      <div class="info-section" *ngIf="alojamiento.transportes && alojamiento.transportes.length > 0">
+        <h2>Transporte Público</h2>
+        <ul>
+          <li *ngFor="let trans of alojamiento.transportes">🚌 {{ trans }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="actions-sidebar">
+      <button (click)="addToFavorites()" class="btn-favorite" *ngIf="!alojamiento.alquilado">
+        ❤️ Agregar a Favoritos
+      </button>
+      <button (click)="showApplicationForm = !showApplicationForm" class="btn-apply" *ngIf="!alojamiento.alquilado">
+        📝 Solicitar Alojamiento
+      </button>
+      <a routerLink="/student/search" class="btn-back">← Volver a la búsqueda</a>
+    </div>
+  </div>
+
+  <div class="application-form" *ngIf="showApplicationForm">
+    <h3>Enviar Solicitud</h3>
+    <textarea 
+      [(ngModel)]="applicationMessage" 
+      placeholder="Cuéntale al propietario por qué eres un buen inquilino..."
+      rows="5"></textarea>
+    <div class="form-actions">
+      <button (click)="submitApplication()" class="btn-submit">Enviar Solicitud</button>
+      <button (click)="showApplicationForm = false" class="btn-cancel">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="comments-section" *ngIf="comentarios.length > 0">
+    <h2>Comentarios ({{ comentarios.length }})</h2>
+    <div class="comment" *ngFor="let comentario of comentarios">
+      <p class="comment-content">{{ comentario.contenido }}</p>
+      <p class="comment-date">{{ comentario.fecha | date }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="loading" *ngIf="loading">
+  Cargando detalles del alojamiento...
+</div>

@@ -1,1 +1,107 @@
-<p>create-accommodation works!</p>
+<div class="create-container">
+  <h1>{{ isEditMode ? 'Editar' : 'Publicar' }} Alojamiento</h1>
+
+  <form [formGroup]="accommodationForm" (ngSubmit)="onSubmit()" class="accommodation-form">
+    <div class="form-group">
+      <label for="titulo">Título *</label>
+      <input 
+        type="text" 
+        id="titulo" 
+        formControlName="titulo" 
+        placeholder="Ej: Habitación amoblada cerca de PUCP"
+        [class.error]="accommodationForm.get('titulo')?.invalid && accommodationForm.get('titulo')?.touched">
+      <div class="error-message" *ngIf="accommodationForm.get('titulo')?.invalid && accommodationForm.get('titulo')?.touched">
+        <span *ngIf="accommodationForm.get('titulo')?.errors?.['required']">El título es obligatorio</span>
+        <span *ngIf="accommodationForm.get('titulo')?.errors?.['minlength']">Mínimo 5 caracteres</span>
+        <span *ngIf="accommodationForm.get('titulo')?.errors?.['maxlength']">Máximo 100 caracteres</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción *</label>
+      <textarea 
+        id="descripcion" 
+        formControlName="descripcion" 
+        rows="5"
+        placeholder="Describe el alojamiento, servicios incluidos, reglas, etc."
+        [class.error]="accommodationForm.get('descripcion')?.invalid && accommodationForm.get('descripcion')?.touched"></textarea>
+      <div class="error-message" *ngIf="accommodationForm.get('descripcion')?.invalid && accommodationForm.get('descripcion')?.touched">
+        <span *ngIf="accommodationForm.get('descripcion')?.errors?.['required']">La descripción es obligatoria</span>
+        <span *ngIf="accommodationForm.get('descripcion')?.errors?.['minlength']">Mínimo 20 caracteres</span>
+        <span *ngIf="accommodationForm.get('descripcion')?.errors?.['maxlength']">Máximo 500 caracteres</span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="direccion">Dirección *</label>
+        <input 
+          type="text" 
+          id="direccion" 
+          formControlName="direccion" 
+          placeholder="Dirección completa"
+          [class.error]="accommodationForm.get('direccion')?.invalid && accommodationForm.get('direccion')?.touched">
+      </div>
+
+      <div class="form-group">
+        <label for="distritoId">Distrito *</label>
+        <select 
+          id="distritoId" 
+          formControlName="distritoId"
+          [class.error]="accommodationForm.get('distritoId')?.invalid && accommodationForm.get('distritoId')?.touched">
+          <option value="">Seleccione un distrito</option>
+          <option *ngFor="let distrito of distritos" [value]="distrito.id">{{ distrito.nombre }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="precioMensual">Precio Mensual (S/.) *</label>
+        <input 
+          type="number" 
+          id="precioMensual" 
+          formControlName="precioMensual" 
+          placeholder="1000"
+          min="0"
+          [class.error]="accommodationForm.get('precioMensual')?.invalid && accommodationForm.get('precioMensual')?.touched">
+      </div>
+
+      <div class="form-group">
+        <label for="nroPartida">Número de Partida *</label>
+        <input 
+          type="text" 
+          id="nroPartida" 
+          formControlName="nroPartida" 
+          placeholder="Número de partida registral"
+          [class.error]="accommodationForm.get('nroPartida')?.invalid && accommodationForm.get('nroPartida')?.touched">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="imagenes">Imágenes</label>
+      <input 
+        type="file" 
+        id="imagenes" 
+        (change)="onFileSelected($event)" 
+        multiple
+        accept="image/*">
+      <small *ngIf="selectedFiles.length > 0">{{ selectedFiles.length }} archivo(s) seleccionado(s)</small>
+    </div>
+
+    <div class="success-message" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="accommodationForm.invalid || loading" class="btn-submit">
+        {{ loading ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Publicar') }}
+      </button>
+      <a routerLink="/landlord/accommodations" class="btn-cancel">Cancelar</a>
+    </div>
+  </form>
+</div>

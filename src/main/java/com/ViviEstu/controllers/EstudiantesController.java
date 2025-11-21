@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +28,36 @@ public class EstudiantesController {
     public ResponseEntity<List<EstudianteResponseDTO>> getAllEstudiantes() {
         List<EstudianteResponseDTO> estudiantes = estudiantesService.getAllEstudiantes();
         return new ResponseEntity<>(estudiantes, HttpStatus.OK);
+    }
+
+    @GetMapping("/me") // -> /estudiantes/me
+    @PreAuthorize("hasRole('ESTUDIANTE')")
+    public ResponseEntity<EstudianteResponseDTO> getMiPerfilEstudiante(
+            @AuthenticationPrincipal UserDetails userDetails) { // Captura el usuario autenticado
+
+        // Asumiendo que puedes obtener el ID del Estudiante a partir del UserDetails
+        // Por ejemplo, si el username es el ID o si tu UserDetails tiene un campo 'estudianteId'.
+        // Aquí deberás adaptar cómo obtienes el ID del estudiante.
+        String correo = userDetails.getUsername(); // Generalmente el username es el correo o el identificador
+
+        EstudianteResponseDTO estudiante = estudiantesService.getEstudianteByCorreo(correo);
+        return new ResponseEntity<>(estudiante, HttpStatus.OK);
+    }
+
+    /**
+     * Endpoint: PUT /estudiantes/me (Actualizar mi perfil)
+     */
+    @PutMapping("/me") // -> /estudiantes/me
+    @PreAuthorize("hasRole('ESTUDIANTE')")
+    public ResponseEntity<EstudianteResponseDTO> updateMiPerfilEstudiante(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Validated @RequestBody EstudiantesRequestDTO requestDTO) {
+
+        String correo = userDetails.getUsername();
+
+        // Deberías modificar tu servicio para que encuentre y actualice por correo
+        EstudianteResponseDTO updated = estudiantesService.updateEstudianteByCorreo(correo, requestDTO);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

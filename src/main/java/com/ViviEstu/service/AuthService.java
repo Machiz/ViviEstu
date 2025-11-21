@@ -10,6 +10,7 @@ import com.ViviEstu.model.entity.*;
 import com.ViviEstu.repository.*;
 import com.ViviEstu.security.JwtUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -48,10 +49,12 @@ public class AuthService {
             throw new ResourceNotFoundException("Correo no encontrado en base de datos");
         }
 
-        User savedUser = userRepository.save(user);
+        User savedUser = new User();
+        try {
+            savedUser = userRepository.save(user);
 
-        if (estudiantesRepository.existsByNombreAndApellidos(request.getNombre(), request.getApellidos())){
-            throw new DuplicateResourceException("Estudiante existente");
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateResourceException("El correo ya está registrado");
         }
 
         // Crear Estudiante
@@ -95,7 +98,15 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado")));
         user.setActive(true);
 
-        User savedUser = userRepository.save(user);
+        User savedUser = new User();
+
+        try {
+            savedUser = userRepository.save(user);
+
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateResourceException("El correo ya está registrado");
+        }
+
 
         // Crear Propietario
         Propietarios propietario = new Propietarios();

@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +34,32 @@ public class PropietarioController {
     public ResponseEntity<List<PropietariosResponseDTO>> getAllPropietarios() {
         List<PropietariosResponseDTO> propietarios = propietarioService.findAllPropietarios();
         return new ResponseEntity<>(propietarios, HttpStatus.OK);
+    }
+
+    @GetMapping("/me") // -> /propietarios/me
+    @PreAuthorize("hasRole('PROPIETARIO')")
+    public ResponseEntity<PropietariosResponseDTO> getMiPerfilPropietario(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String correo = userDetails.getUsername();
+
+        PropietariosResponseDTO propietario = propietarioService.findPropietarioByCorreo(correo);
+        return new ResponseEntity<>(propietario, HttpStatus.OK);
+    }
+
+    /**
+     * Endpoint: PUT /propietarios/me (Actualizar mi perfil)
+     */
+    @PutMapping("/me") // -> /propietarios/me
+    @PreAuthorize("hasRole('PROPIETARIO')")
+    public ResponseEntity<PropietariosResponseDTO> updateMiPerfilPropietario(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Validated @RequestBody PropietariosRequestDTO requestDTO) {
+
+        String correo = userDetails.getUsername();
+
+        PropietariosResponseDTO updated = propietarioService.updatePropietarioByCorreo(correo, requestDTO);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

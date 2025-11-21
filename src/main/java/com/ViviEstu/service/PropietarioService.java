@@ -62,6 +62,8 @@ public class PropietarioService {
         return responseDTO;
     }
 
+
+
     @Transactional(readOnly = true)
     public List<PropietariosResponseDTO> findAllPropietarios() {
         return propietarioRepository.findAll()
@@ -91,5 +93,49 @@ public class PropietarioService {
     @Transactional
     public void deletePropietario(Long id) {
         propietarioRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public PropietariosResponseDTO findPropietarioByCorreo(String correo) {
+        Propietarios propietario = propietarioRepository.findByUser_Correo(correo)
+                .orElseThrow(() -> new ResourceNotFoundException("Propietario no encontrado con correo: " + correo));
+
+        PropietariosResponseDTO responseDTO = propietariosMapper.toDTO(propietario);
+        responseDTO.setCorreo(propietario.getUser().getCorreo());
+        return responseDTO;
+    }
+
+    @Transactional
+    public PropietariosResponseDTO updatePropietarioByCorreo(String correo, PropietariosRequestDTO propietariosRequestDTO) {
+
+        // Validación de campos obligatorios
+        if (propietariosRequestDTO.getNombre() == null ||
+                propietariosRequestDTO.getApellidos() == null) {
+            throw new IllegalArgumentException("Debe completar los campos obligatorios.");
+        }
+
+        // Buscar propietario por correo
+        Propietarios propietario = propietarioRepository.findByUser_Correo(correo)
+                .orElseThrow(() -> new ResourceNotFoundException("Propietario no encontrado con correo: " + correo));
+
+        // Actualizar datos personales
+        propietario.setNombre(propietariosRequestDTO.getNombre());
+        propietario.setApellidos(propietariosRequestDTO.getApellidos());
+        propietario.setDni(propietariosRequestDTO.getDni());
+        propietario.setTelefono(propietariosRequestDTO.getTelefono());
+
+        // Actualizar datos de usuario
+        User user = propietario.getUser();
+        if (user != null) {
+            user.setCorreo(propietariosRequestDTO.getCorreo());
+            user.setContrasenia(propietariosRequestDTO.getContrasenia()); // Deberías encriptar esto en producción
+            userRepository.save(user);
+        }
+
+        propietarioRepository.save(propietario);
+
+        PropietariosResponseDTO responseDTO = propietariosMapper.toDTO(propietario);
+        responseDTO.setCorreo(user.getCorreo());
+        return responseDTO;
     }
 }

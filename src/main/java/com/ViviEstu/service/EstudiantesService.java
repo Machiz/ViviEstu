@@ -42,6 +42,8 @@ public class EstudiantesService{
                 .toList();
     }
 
+
+
     @Transactional(readOnly = true)
     public EstudianteResponseDTO getEstudianteById(Long id) {
         Estudiantes estudiante = estudiantesRepository.findById(id)
@@ -53,6 +55,7 @@ public class EstudiantesService{
         responseDTO.setCorreo(estudiante.getUser().getCorreo());
         return responseDTO;
     }
+
 
     @Transactional
     public EstudianteResponseDTO createEstudiante(EstudiantesRequestDTO dto) {
@@ -145,4 +148,52 @@ public class EstudiantesService{
         userRepository.delete(estudiante.getUser());
         estudiantesRepository.deleteById(id);
     }
+
+    @Transactional(readOnly = true)
+    public EstudianteResponseDTO getEstudianteByCorreo(String correo) {
+        Estudiantes estudiante = estudiantesRepository.findByUser_Correo(correo)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con correo: " + correo));
+
+        EstudianteResponseDTO responseDTO = estudiantesMapper.convertToDTO(estudiante);
+        responseDTO.setDistrito(estudiante.getDistrito().getNombre());
+        responseDTO.setUniversidad(estudiante.getUniversidad().getNombre());
+        responseDTO.setCorreo(estudiante.getUser().getCorreo());
+        return responseDTO;
+    }
+
+    @Transactional
+    public EstudianteResponseDTO updateEstudianteByCorreo(String correo, EstudiantesRequestDTO estudianteRequestDTO) {
+        Estudiantes estudiante = estudiantesRepository.findByUser_Correo(correo)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con correo: " + correo));
+
+        // Validación de campos obligatorios
+        if (estudianteRequestDTO.getNombre() == null ||
+                estudianteRequestDTO.getApellidos() == null) {
+            throw new BadRequestException("Campos obligatorios vacíos");
+        }
+
+        // Actualizar datos del estudiante
+        estudiante.setNombre(estudianteRequestDTO.getNombre());
+        estudiante.setApellidos(estudianteRequestDTO.getApellidos());
+        estudiante.setDni(estudianteRequestDTO.getDni());
+        estudiante.setTelefono(estudianteRequestDTO.getTelefono());
+        estudiante.setCarrera(estudianteRequestDTO.getCarrera());
+
+        // Actualizar datos de usuario (correo/contraseña)
+        User user = estudiante.getUser();
+        if (user != null) {
+            user.setCorreo(estudianteRequestDTO.getCorreo());
+            user.setContrasenia(estudianteRequestDTO.getContrasenia()); // Deberías encriptar esto en producción
+            userRepository.save(user);
+        }
+
+        estudiantesRepository.save(estudiante);
+
+        EstudianteResponseDTO responseDTO = estudiantesMapper.convertToDTO(estudiante);
+        responseDTO.setDistrito(estudiante.getDistrito().getNombre());
+        responseDTO.setUniversidad(estudiante.getUniversidad().getNombre());
+        responseDTO.setCorreo(user.getCorreo());
+        return responseDTO;
+    }
+
 }

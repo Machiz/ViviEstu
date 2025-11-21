@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface PropietariosRepository extends JpaRepository<Propietarios, Long> {
     boolean existsByNombreAndApellidos(String nombre, String apellidos);
-
+    Optional<Propietarios> findByUser_Correo(String correo);
     Optional<Propietarios> findByUserId(Long id);
 }

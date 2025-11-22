@@ -85,7 +85,7 @@ public class AuthService {
                 savedUser.getRole().getName().toString()
         );
 
-        return new AuthResponseDTO(token, savedUser.getCorreo(), estudiante.getNombre());
+        return new AuthResponseDTO(token, savedUser.getCorreo(), estudiante.getNombre(), estudiante.getId(),savedUser.getRole().getName().toString());
     }
 
     @Transactional
@@ -126,7 +126,7 @@ public class AuthService {
                 savedUser.getRole().getName().toString()
         );
 
-        return new AuthResponseDTO(token, savedUser.getCorreo(), propietario.getNombre());
+        return new AuthResponseDTO(token, savedUser.getCorreo(), propietario.getNombre(), propietario.getId(), savedUser.getRole().getName().toString());
     }
 
     @Transactional(readOnly = true)
@@ -155,7 +155,7 @@ public class AuthService {
                     "ROLE_ADMIN"
 
             );
-            return new AuthResponseDTO(token, user.getCorreo(), "Administrador");
+            return new AuthResponseDTO(token, user.getCorreo(), "Administrador", 0L, "ROLE_ADMIN");
         }
 
         // ESTUDIANTE → buscar en tabla estudiantes
@@ -169,7 +169,7 @@ public class AuthService {
                     estudiante.getId(),
                     "ROLE_ESTUDIANTE"
             );
-            return new AuthResponseDTO(token, user.getCorreo(), estudiante.getNombre());
+            return new AuthResponseDTO(token, user.getCorreo(), estudiante.getNombre(), estudiante.getId(),"ROLE_ESTUDIANTE");
         }
 
         // PROPIETARIO → buscar en tabla propietarios
@@ -183,7 +183,7 @@ public class AuthService {
                     propietario.getId(),
                     "ROLE_PROPIETARIO"
             );
-            return new AuthResponseDTO(token, user.getCorreo(), propietario.getNombre());
+            return new AuthResponseDTO(token, user.getCorreo(), propietario.getNombre(), propietario.getId(),"ROLE_PROPIETARIO");
         }
 
         // 4. Si llega acá, el rol no está reconocido

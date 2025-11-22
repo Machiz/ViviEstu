@@ -17,7 +17,8 @@ public class CorsConfig {
 
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",    // React
-                "http://localhost:4200"     // Angular
+                "http://localhost:4200",
+                "https://viviestu-app-front.vercel.app/"// Angular
         ));
 
         configuration.setAllowedMethods(Arrays.asList(

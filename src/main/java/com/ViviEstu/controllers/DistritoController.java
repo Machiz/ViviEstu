@@ -17,14 +17,14 @@ public class DistritoController {
     private DistritoService distritoService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN') or hasRole('PROPIETARIO')")
     public ResponseEntity<List<DistritoResponseDTO>> getAllDistritos() {
         List<DistritoResponseDTO> distritos = distritoService.listAll();
         return ResponseEntity.ok(distritos);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN') or hasRole('PROPIETARIO')")
     public ResponseEntity<DistritoResponseDTO> getDistritoById(@PathVariable Long id) {
         DistritoResponseDTO distrito = distritoService.getDistritoById(id);
         return ResponseEntity.ok(distrito);

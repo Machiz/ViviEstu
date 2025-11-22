@@ -28,19 +28,19 @@ public class UniversidadController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN') or hasRole('PROPIETARIO')")
     public ResponseEntity<List<UniversidadResponseDTO>> listar() {
         return ResponseEntity.ok(universidadService.listar());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN') or hasRole('PROPIETARIO')")
     public ResponseEntity<UniversidadResponseDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(universidadService.obtenerPorId(id));
     }
 
     @GetMapping("/buscar")
-    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN') or hasRole('PROPIETARIO')")
     public ResponseEntity<List<UniversidadResponseDTO>> buscarPorNombre(@RequestParam String nombre) {
         return ResponseEntity.ok(universidadService.buscarPorNombre(nombre));
     }

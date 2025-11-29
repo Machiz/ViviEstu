@@ -47,18 +47,19 @@ public class EstudiantesController {
     /**
      * Endpoint: PUT /estudiantes/me (Actualizar mi perfil)
      */
-    @PutMapping("/me") // -> /estudiantes/me
+    @PutMapping("/me")
     @PreAuthorize("hasRole('ESTUDIANTE')")
     public ResponseEntity<EstudianteResponseDTO> updateMiPerfilEstudiante(
             @AuthenticationPrincipal UserDetails userDetails,
             @Validated @RequestBody EstudiantesRequestDTO requestDTO) {
 
-        String correo = userDetails.getUsername();
+        String correo = userDetails.getUsername(); // correo del token
 
-        // Deberías modificar tu servicio para que encuentre y actualice por correo
-        EstudianteResponseDTO updated = estudiantesService.updateEstudianteByCorreo(correo, requestDTO);
+        EstudianteResponseDTO updated = estudiantesService.updateEstudianteMe(correo, requestDTO);
+
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
+
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

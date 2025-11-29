@@ -141,6 +141,51 @@ public class EstudiantesService{
     }
 
     @Transactional
+    public EstudianteResponseDTO updateEstudianteMe(String correo, EstudiantesRequestDTO dto) {
+
+        Estudiantes estudiante = estudiantesRepository.findByUser_Correo(correo)
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con correo: " + correo));
+
+        // Validaciones mínimas
+        if (dto.getNombre() == null || dto.getApellidos() == null) {
+            throw new BadRequestException("Nombre y apellidos son obligatorios");
+        }
+
+        // Actualizar solo datos del Estudiante (NO del User)
+        estudiante.setNombre(dto.getNombre());
+        estudiante.setApellidos(dto.getApellidos());
+        estudiante.setTelefono(dto.getTelefono());
+        estudiante.setCarrera(dto.getCarrera());
+        estudiante.setCiclo(dto.getCiclo());
+        estudiante.setDni(dto.getDni());
+
+        // Si envía distritoId → actualizar
+        if (dto.getDistritoId() != null) {
+            Distrito distrito = distritoRepository.findById(dto.getDistritoId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Distrito no encontrado"));
+            estudiante.setDistrito(distrito);
+        }
+
+        // Si envía universidadId → actualizar
+        if (dto.getUniversidadId() != null) {
+            Universidad universidad = universidadRepository.findById(dto.getUniversidadId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Universidad no encontrada"));
+            estudiante.setUniversidad(universidad);
+        }
+
+        estudiantesRepository.save(estudiante);
+
+        // Preparar respuesta
+        EstudianteResponseDTO responseDTO = estudiantesMapper.convertToDTO(estudiante);
+        responseDTO.setDistrito(estudiante.getDistrito().getNombre());
+        responseDTO.setUniversidad(estudiante.getUniversidad().getNombre());
+        responseDTO.setCorreo(estudiante.getUser().getCorreo()); // el correo sigue igual
+
+        return responseDTO;
+    }
+
+
+    @Transactional
     public void deleteEstudiante(Long id) {
         Estudiantes estudiante = estudiantesRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado con id: " + id));

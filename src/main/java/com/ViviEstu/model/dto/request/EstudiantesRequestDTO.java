@@ -18,11 +18,9 @@ public class EstudiantesRequestDTO {
     @Size(max = 50, message = "Los apellidos no debe exceder los 50 caracteres")
     private String apellidos;
 
-    @NotBlank(message = "El correo no puede estar vacío")
     @Email(message = "El correo debe tener un formato válido")
     private String correo;
 
-    @NotBlank(message = "La contraseña no puede estar vacía")
     @Size(min = 6, max = 20, message = "La contraseña debe tener entre 6 y 20 caracteres")
     private String contrasenia;
 

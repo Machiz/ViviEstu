@@ -1,13 +1,16 @@
 package com.ViviEstu;
 
 import com.ViviEstu.model.entity.Distrito;
+import com.ViviEstu.model.entity.Universidad;
 import com.ViviEstu.repository.DistritoRepository;
+import com.ViviEstu.repository.UniversidadRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @SpringBootApplication
 public class ViviEstuApplication {
@@ -17,7 +20,7 @@ public class ViviEstuApplication {
     }
 
     @Bean
-    CommandLineRunner initDistritos(DistritoRepository distritoRepository) {
+    CommandLineRunner initDistritos(DistritoRepository distritoRepository, UniversidadRepository universidadRepository) {
         // La expresión lambda se ejecutará al inicio de la aplicación
         return args -> {
             // --- Datos de Ejemplo para Distritos de Lima ---
@@ -71,9 +74,9 @@ public class ViviEstuApplication {
             );
 
             // 5. Los Olivos
-            Distrito olivos = new Distrito(
+            Distrito sanMiguel = new Distrito(
                     null,
-                    "Los Olivos",
+                    "San Miguel",
                     "Distrito popular en el Cono Norte, con alta densidad poblacional y fuerte actividad comercial.",
                     150000,
                     "Urbano",
@@ -87,11 +90,28 @@ public class ViviEstuApplication {
             distritoRepository.save(surco);
             distritoRepository.save(sanIsidro);
             distritoRepository.save(lince);
-            distritoRepository.save(olivos);
+            distritoRepository.save(sanMiguel);
 
             // También puedes usar saveAll para guardar una lista de una vez
             // List<Distrito> distritos = List.of(miraflores, surco, sanIsidro, lince, olivos);
             // distritoRepository.saveAll(distritos);
+
+            Universidad upc = new Universidad(null, "Universidad Peruana de Ciencias Aplicadas (UPC)", surco);
+
+            // Universidad César Vallejo (UCV) - Sede más cercana
+            Universidad ucv = new Universidad(null, "Universidad César Vallejo (UCV)", lince);
+
+            // UCAL - Sede en San Miguel
+            Universidad ucal = new Universidad(null, "UCAL", miraflores);
+
+            // Pontificia Universidad Católica del Perú (PUCP) - Sede en San Miguel
+            Universidad pucp = new Universidad(null, "Pontificia Universidad Católica del Perú (PUCP)", sanMiguel);
+
+            // Universidad Nacional Mayor de San Marcos (UNMSM) - Sede principal en Lima Cercado
+            Universidad unmsm = new Universidad(null, "Universidad Nacional Mayor de San Marcos (UNMSM)", sanMiguel);
+            Universidad up = new Universidad(null, "Universidad del Pacifico (UP)", sanIsidro);
+            // Guardar todas las universidades
+            universidadRepository.saveAll(List.of(upc, ucv, ucal, pucp, unmsm,up));
         };
     }
 

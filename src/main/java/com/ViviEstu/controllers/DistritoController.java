@@ -17,7 +17,6 @@ public class DistritoController {
     private DistritoService distritoService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN') or hasRole('PROPIETARIO')")
     public ResponseEntity<List<DistritoResponseDTO>> getAllDistritos() {
         List<DistritoResponseDTO> distritos = distritoService.listAll();
         return ResponseEntity.ok(distritos);

@@ -28,7 +28,6 @@ public class UniversidadController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN') or hasRole('PROPIETARIO')")
     public ResponseEntity<List<UniversidadResponseDTO>> listar() {
         return ResponseEntity.ok(universidadService.listar());
     }

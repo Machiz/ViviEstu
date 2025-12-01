@@ -18,6 +18,12 @@ public class ComentarioController {
 
     private final ComentarioService comentarioService;
 
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ComentarioResponseDTO>> listarTodos() {
+        return ResponseEntity.ok(comentarioService.listarTodos());
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
     public ResponseEntity<ComentarioResponseDTO> crearComentario(@RequestBody ComentarioRequestDTO request) {

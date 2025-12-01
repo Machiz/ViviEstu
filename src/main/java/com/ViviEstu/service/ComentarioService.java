@@ -26,6 +26,10 @@ public class ComentarioService {
     private final EstudiantesRepository estudiantesRepository;
     private final ComentarioMapper comentarioMapper;
 
+    @Transactional(readOnly = true)
+    public List<ComentarioResponseDTO> listarTodos() {
+        return comentarioMapper.toListDTO(comentarioRepository.findAll());
+    }
 
     public ComentarioResponseDTO registrar(ComentarioRequestDTO request) {
 

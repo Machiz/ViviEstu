@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class InteraccionService {
+public class
+InteraccionService {
 
     private final InteraccionesRepository interaccionRepository;
     private final InteraccionMapper interaccionMapper;
@@ -91,15 +92,34 @@ public class InteraccionService {
         interaccionRepository.deleteById(id);
     }
 
+
     @Transactional(readOnly = true)
     public InteraccionReporteResponseDTO generarReportePorAlojamiento(Long alojamientoId) {
 
         List<Interacciones> interacciones = interaccionRepository.findByAlojamiento_Id(alojamientoId);
 
+        // --- CAMBIO AQUÍ ---
         if (interacciones.isEmpty()) {
-            throw new ResourceNotFoundException("No hay interacciones para el alojamiento con ID " + alojamientoId);
-        }
+            // 1. Buscamos el alojamiento para obtener su nombre (necesitas el repositorio de alojamientos)
+            // Si no tienes el repositorio inyectado aquí, tendrás que poner un string genérico o inyectarlo.
+            Alojamiento alojamiento = alojamientoRepository.findById(alojamientoId)
+                    .orElseThrow(() -> new ResourceNotFoundException("El alojamiento con ID " + alojamientoId + " no existe"));
 
+            // 2. Retornamos el DTO con todo en CERO o NULL, pero STATUS 200 OK
+            return new InteraccionReporteResponseDTO(
+                    alojamientoId,
+                    alojamiento.getTitulo(), // Mantenemos el nombre correcto
+                    0L,                      // Total
+                    0L,                      // Únicos
+                    null,                    // Fecha (puede ser null o LocalDateTime.now())
+                    "N/A",                   // Universidad
+                    "N/A",                   // Distrito
+                    0.0                      // Promedio
+            );
+        }
+        // -------------------
+
+        // El resto de tu lógica se mantiene igual para cuando SÍ hay datos
         String nombreAlojamiento = interacciones.get(0).getAlojamiento().getTitulo();
 
         long totalInteracciones = interacciones.size();
@@ -148,5 +168,4 @@ public class InteraccionService {
                 promedioInteraccionesPorEstudiante
         );
     }
-
 }

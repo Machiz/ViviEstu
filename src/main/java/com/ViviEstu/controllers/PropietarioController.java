@@ -50,15 +50,17 @@ public class PropietarioController {
     /**
      * Endpoint: PUT /propietarios/me (Actualizar mi perfil)
      */
-    @PutMapping("/me") // -> /propietarios/me
-    @PreAuthorize("hasRole('PROPIETARIO')")
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('PROPIETARIO')") // Asegúrate de que este rol exista en tu seguridad
     public ResponseEntity<PropietariosResponseDTO> updateMiPerfilPropietario(
             @AuthenticationPrincipal UserDetails userDetails,
             @Validated @RequestBody PropietariosRequestDTO requestDTO) {
 
+        // Obtenemos el correo del token (quien está logueado)
         String correo = userDetails.getUsername();
 
-        PropietariosResponseDTO updated = propietarioService.updatePropietarioByCorreo(correo, requestDTO);
+        PropietariosResponseDTO updated = propietarioService.updatePropietarioMe(correo, requestDTO);
+
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 

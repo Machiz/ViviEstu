@@ -15,10 +15,8 @@ public class PropietariosRequestDTO {
     private String apellidos;
 
     @Email(message = "Correo no válido")
-    @NotBlank(message = "El correo no puede estar vacío")
     private String correo;
 
-    @NotBlank(message = "La contraseña es obligatoria")
     private String contrasenia;
 
     @NotBlank(message = "El teléfono es obligatorio")

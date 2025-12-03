@@ -107,6 +107,12 @@ public class AlojamientoController {
         return ResponseEntity.ok("Imagen eliminada correctamente");
     }
 
+    @GetMapping("/propietario/{propietarioId}")
+    @PreAuthorize("hasRole('PROPIETARIO') or hasRole('ADMIN')")
+    public ResponseEntity<List<AlojamientoResponseDTO>> listarPorPropietario(@PathVariable Long propietarioId) {
+        return ResponseEntity.ok(alojamientoService.listarPorPropietario(propietarioId));
+    }
+
     @GetMapping("/buscar-por-area")
     @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
     public ResponseEntity<List<AlojamientoResponseDTO>> buscarPorArea(

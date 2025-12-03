@@ -20,5 +20,7 @@ public interface AlojamientoRepository extends JpaRepository<Alojamiento, Long> 
 
     @Query("SELECT a FROM Alojamiento a WHERE a.latitud BETWEEN :minLat AND :maxLat AND a.longitud BETWEEN :minLng AND :maxLng")
     List<Alojamiento> findByBounds(@Param("minLat") double minLat, @Param("maxLat") double maxLat, @Param("minLng") double minLng, @Param("maxLng") double maxLng);
+
+    List<Alojamiento> findByPropietarioId(Long propietarioId);
 }
 

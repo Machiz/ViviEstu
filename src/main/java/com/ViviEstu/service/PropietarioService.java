@@ -106,6 +106,38 @@ public class PropietarioService {
     }
 
     @Transactional
+    public PropietariosResponseDTO updatePropietarioMe(String correo, PropietariosRequestDTO dto) {
+
+        // 1. Buscar el propietario por el correo del Usuario asociado
+        Propietarios propietario = propietarioRepository.findByUser_Correo(correo)
+                .orElseThrow(() -> new ResourceNotFoundException("Propietario no encontrado con correo: " + correo));
+
+        // 2. Validaciones mínimas (puedes agregar más si necesitas)
+        if (dto.getNombre() == null || dto.getApellidos() == null) {
+            throw new IllegalArgumentException("Nombre y apellidos son obligatorios");
+        }
+
+        // 3. Actualizar SOLO datos del Propietario (NO tocar User/Correo/Contraseña)
+        propietario.setNombre(dto.getNombre());
+        propietario.setApellidos(dto.getApellidos());
+        propietario.setTelefono(dto.getTelefono());
+        propietario.setDni(dto.getDni());
+
+        // 4. Guardar cambios
+        propietarioRepository.save(propietario);
+
+        // 5. Preparar respuesta
+        PropietariosResponseDTO responseDTO = propietariosMapper.toDTO(propietario);
+
+        // Asignamos el correo original para que el front lo vea, aunque no haya cambiado
+        if (propietario.getUser() != null) {
+            responseDTO.setCorreo(propietario.getUser().getCorreo());
+        }
+
+        return responseDTO;
+    }
+
+    @Transactional
     public PropietariosResponseDTO updatePropietarioByCorreo(String correo, PropietariosRequestDTO propietariosRequestDTO) {
 
         // Validación de campos obligatorios

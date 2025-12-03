@@ -73,6 +73,19 @@ public class AlojamientoService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<AlojamientoResponseDTO> listarPorPropietario(Long propietarioId) {
+        // Buscamos los alojamientos del propietario
+        List<Alojamiento> alojamientos = alojamientoRepository.findByPropietarioId(propietarioId);
+
+        if (alojamientos.isEmpty()) {
+            throw new ResourceNotFoundException("El propietario no tiene alojamientos registrados.");
+        }
+
+        return alojamientos.stream()
+                .map(mapper::convertToDTO)
+                .toList();
+    }
 
     @Transactional
     public AlojamientoResponseDTO crearAlojamiento(AlojamientoRequestDTO dto) throws IOException {

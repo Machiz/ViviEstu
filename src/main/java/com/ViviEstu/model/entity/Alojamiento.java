@@ -35,6 +35,15 @@ public class Alojamiento {
     @Column(name = "precio_mensual", nullable = false)
     private BigDecimal precioMensual;
 
+    @Column(name = "metros_Cuadrados", nullable = false)
+    private Integer metrosCuadrados;
+
+    @Column(name = "banios", nullable = false)
+    private Integer banios;
+
+    @Column(name = "dormitorios", nullable = false)
+    private Integer dormitorios;
+
     @Column(nullable = false)
     private Timestamp fecha;
 

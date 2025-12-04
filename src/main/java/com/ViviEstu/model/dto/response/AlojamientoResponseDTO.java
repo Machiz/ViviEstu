@@ -24,6 +24,9 @@ public class AlojamientoResponseDTO {
     private String distrito;
     private String nroPartida;
     private Timestamp fecha;
+    private Integer metrosCuadrados;
+    private Integer banios;
+    private Integer dormitorios;
     private List<ImagenResponseDTO> imagenes;
     private List<String> transportes;
     private List<String> universidades;

@@ -130,6 +130,9 @@ public class AlojamientoService {
         alojamiento.setPrecioMensual(dto.getPrecioMensual());
         alojamiento.setFecha(new Timestamp(System.currentTimeMillis()));
         alojamiento.setAlquilado(false);
+        alojamiento.setMetrosCuadrados(dto.getMetrosCuadrados());
+        alojamiento.setBanios(dto.getBanios());
+        alojamiento.setDormitorios(dto.getDormitorios());
         alojamiento.setNroPartida(dto.getNroPartida());
         alojamiento.setDistrito(distrito);
         alojamiento.setPropietario(propietario);
@@ -190,6 +193,9 @@ public class AlojamientoService {
             throw new IllegalArgumentException("No se puede cambiar el propietario del alojamiento.");
         }
 
+        alojamiento.setBanios(dto.getBanios());
+        alojamiento.setDormitorios(dto.getDormitorios());
+        alojamiento.setNroPartida(dto.getNroPartida());
         alojamiento.setTitulo(dto.getTitulo());
         alojamiento.setDescripcion(dto.getDescripcion());
         alojamiento.setDireccion(dto.getDireccion());

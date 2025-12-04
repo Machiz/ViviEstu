@@ -42,6 +42,15 @@ public class AlojamientoRequestDTO {
     @NotNull(message = "El ID de la zona es obligatorio")
     private Long distritoId;
 
+    @NotNull(message = "Debe indicar metros cuadrados")
+    private Integer metrosCuadrados;
+
+    @NotNull(message = "Debe indicar cantidad banios")
+    private Integer banios;
+
+    @NotNull(message = "Debe indicar cantidad dormitorios")
+    private Integer dormitorios;
+
     private List<MultipartFile> imagenes;
 
     private List<String> transportes;

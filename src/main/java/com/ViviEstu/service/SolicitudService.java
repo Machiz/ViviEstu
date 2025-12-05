@@ -111,6 +111,18 @@ public class SolicitudService {
                 .collect(Collectors.toList());
     }
 
+    public List<SolicitudResponseDTO> obtenerPorEstudianteIdYAlojamientoId(Long estudianteId, Long alojamientoId) {
+        List<Solicitudes> solicitudes = solicitudesRepository.findByEstudiantes_IdAndAlojamiento_Id(estudianteId, alojamientoId);
+
+        if (solicitudes.isEmpty()) {
+            throw new ResourceNotFoundException("No se encontraron solicitudes para el estudiante con ID: " + estudianteId + " y el alojamiento con ID: " + alojamientoId);
+        }
+
+        return solicitudes.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
     public void eliminar(Long id) {
         if (!solicitudesRepository.existsById(id)) {
             throw new RuntimeException("No se puede eliminar. Solicitud no encontrada con ID: " + id);

@@ -15,4 +15,6 @@ public interface SolicitudRepository extends JpaRepository<Solicitudes,Long> {
     // Buscar solicitudes por ID del propietario del alojamiento
     @Query("SELECT s FROM Solicitudes s WHERE s.alojamiento.propietario.id = :propietarioId")
     List<Solicitudes> findByPropietarioId(Long propietarioId);
+
+    List<Solicitudes> findByEstudiantes_IdAndAlojamiento_Id(Long estudianteId, Long alojamientoId);
 }

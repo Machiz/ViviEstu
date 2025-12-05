@@ -71,6 +71,14 @@ public class SolicitudController {
         return ResponseEntity.ok(solicitudesService.obtenerPorPropietarioId(id));
     }
 
+    @GetMapping("/estudiante/{estudianteId}/alojamiento/{alojamientoId}")
+    @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('PROPIETARIO') or hasRole('ADMIN')")
+    public ResponseEntity<List<SolicitudResponseDTO>> obtenerPorEstudianteIdYAlojamientoId(
+            @PathVariable Long estudianteId,
+            @PathVariable Long alojamientoId) {
+        return ResponseEntity.ok(solicitudesService.obtenerPorEstudianteIdYAlojamientoId(estudianteId, alojamientoId));
+    }
+
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
